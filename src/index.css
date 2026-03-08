@@ -5,23 +5,38 @@
   --font-display: "Inter", sans-serif;
 }
 
+/* ===== Lenis Smooth Scroll ===== */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ===== Noise Texture — slowed for performance ===== */
 @keyframes noise {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  20% { transform: translate(-15%, 5%); }
-  30% { transform: translate(7%, -25%); }
-  40% { transform: translate(-5%, 25%); }
-  50% { transform: translate(-15%, 10%); }
-  60% { transform: translate(15%, 0%); }
-  70% { transform: translate(0%, 15%); }
-  80% { transform: translate(3%, 35%); }
-  90% { transform: translate(-10%, 10%); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-5%, -10%, 0); }
+  50% { transform: translate3d(-15%, 5%, 0); }
+  75% { transform: translate3d(7%, -25%, 0); }
 }
 
 .animate-noise {
-  animation: noise 0.2s infinite;
+  animation: noise 8s steps(4) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
+/* ===== Liquid Gradient ===== */
 @keyframes liquid-flow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -39,29 +54,45 @@
   );
   background-size: 300% 300%;
   animation: liquid-flow 12s ease-in-out infinite;
+  will-change: background-position;
 }
 
 .animate-liquid-fast {
   animation: liquid-flow 4s ease-in-out infinite;
 }
 
-@layer base {
-  body {
-    @apply bg-black text-white antialiased selection:bg-white selection:text-black;
-    font-family: var(--font-sans);
-  }
-}
-
+/* ===== Marquee — GPU accelerated ===== */
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .animate-marquee {
   animation: marquee 30s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
-/* Custom scrollbar for that premium feel */
+/* ===== Base Styles ===== */
+@layer base {
+  body {
+    @apply bg-black text-white antialiased selection:bg-white selection:text-black;
+    font-family: var(--font-sans);
+    font-display: swap;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* ===== GPU-accelerated utility ===== */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* ===== Premium Scrollbar ===== */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -74,4 +105,30 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* ===== Reduced Motion — disable heavy animations ===== */
+@media (prefers-reduced-motion: reduce) {
+  .animate-noise,
+  .animate-marquee,
+  .animate-liquid,
+  .animate-liquid-fast {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Mobile Performance — reduce heavy effects ===== */
+@media (max-width: 768px) {
+  .animate-noise {
+    animation-duration: 16s;
+  }
+
+  .glow-effect {
+    display: none !important;
+  }
 }

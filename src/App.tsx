@@ -7,74 +7,48 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, ani
 import { ArrowDownToLine, Twitter, Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
+const galleryWorks = [
+  { title: "Visual Archive 01", category: "Art Direction", seed: "work-11" },
+  { title: "Visual Archive 02", category: "Brand Identity", seed: "work-14" },
+  { title: "Visual Archive 03", category: "Motion Design", seed: "work-17" },
+  { title: "Visual Archive 04", category: "UI/UX Design", seed: "work-20" },
+];
+
 function GalleryItem({ index }: any) {
-  const tiltX = useMotionValue(0);
-  const tiltY = useMotionValue(0);
-  const springTiltX = useSpring(tiltX, { damping: 25, stiffness: 200 });
-  const springTiltY = useSpring(tiltY, { damping: 25, stiffness: 200 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY, currentTarget } = e;
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
-    const x = (clientX - left) / width - 0.5;
-    const y = (clientY - top) / height - 0.5;
-    tiltX.set(y * 15);
-    tiltY.set(x * -15);
-  };
-
-  const handleMouseLeave = () => {
-    tiltX.set(0);
-    tiltY.set(0);
-  };
+  const work = galleryWorks[index];
 
   return (
     <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX: springTiltX,
-        rotateY: springTiltY,
-        transformStyle: "preserve-3d",
-      }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: 1, 
-        delay: (index % 4) * 0.1, 
-        ease: [0.16, 1, 0.3, 1] 
+      transition={{
+        duration: 1,
+        delay: index * 0.15,
+        ease: [0.16, 1, 0.3, 1]
       }}
-      className="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#1a1a1a] perspective-1000"
+      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a] cursor-pointer"
     >
       <motion.div
         className="w-full h-full"
-        whileHover={{ scale: 1.05, translateZ: 50 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <img 
-          src={`https://picsum.photos/seed/work-${index + 10}/400/500`} 
-          alt={`Work ${index + 1}`} 
+        <img
+          src={`https://picsum.photos/seed/${work.seed}/800/1000`}
+          alt={work.title}
           loading="lazy"
           className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-in-out"
           referrerPolicy="no-referrer"
         />
-        {/* Simplified Overlay */}
-        <div className="absolute inset-0 bg-white/5 pointer-events-none mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </motion.div>
-      <div 
-        style={{ transform: "translateZ(70px)" }}
-        className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-8 pointer-events-none"
-      >
-        <motion.span 
-          className="text-[10px] uppercase tracking-[0.3em] font-bold mb-2 opacity-60"
-        >
-          Project {index + 1}
-        </motion.span>
-        <motion.h4 
-          className="text-2xl font-bold tracking-tighter"
-        >
-          Visual Archive 0{index + 1}
-        </motion.h4>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10">
+        <span className="text-[10px] uppercase tracking-[0.3em] font-bold mb-2 opacity-60">
+          {work.category}
+        </span>
+        <h4 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tighter">
+          {work.title}
+        </h4>
       </div>
     </motion.div>
   );
@@ -113,9 +87,9 @@ function AnimatedHeadline() {
     "Blending design and code with functional clarity and creative precision.",
     "Delivering thoughtful digital systems with structure, flow, and expressive interaction."
   ];
-  
+
   return (
-    <div 
+    <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className="max-w-7xl mx-auto relative group"
@@ -126,13 +100,12 @@ function AnimatedHeadline() {
           <div key={lineIndex} className="overflow-hidden py-2">
             <motion.div
               variants={{
-                hidden: { opacity: 0, y: "100%", filter: "blur(10px)" },
-                visible: { 
-                  opacity: 1, 
-                  y: 0, 
-                  filter: "blur(0px)",
-                  transition: { 
-                    duration: 1.2, 
+                hidden: { opacity: 0, y: "100%" },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    duration: 1.2,
                     ease: [0.16, 1, 0.3, 1],
                     delay: lineIndex * 0.2
                   }
@@ -156,17 +129,17 @@ function AnimatedHeadline() {
           {lines.map((line, lineIndex) => (
             <div key={`spot-${lineIndex}`} className="overflow-hidden py-2">
               <motion.div
-                style={{ 
+                style={{
                   maskImage: spotlight,
                   WebkitMaskImage: spotlight,
                 }}
                 variants={{
                   hidden: { opacity: 0, y: "100%" },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0, 
-                    transition: { 
-                      duration: 1.2, 
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 1.2,
                       ease: [0.16, 1, 0.3, 1],
                       delay: lineIndex * 0.2
                     }
@@ -232,15 +205,15 @@ function FAQSection() {
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="w-48 aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a]"
           >
-            <img 
-              src="https://picsum.photos/seed/portrait-faq/600/800" 
-              alt="Process Visual" 
+            <img
+              src="https://picsum.photos/seed/portrait-faq/600/800"
+              alt="Process Visual"
               className="w-full h-full object-cover grayscale"
               referrerPolicy="no-referrer"
             />
           </motion.div>
-          
-          <motion.h2 
+
+          <motion.h2
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -255,7 +228,7 @@ function FAQSection() {
         <div className="lg:col-span-7">
           <div className="border-t border-white/10">
             {faqs.map((faq, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -273,7 +246,7 @@ function FAQSection() {
                       {faq.question}
                     </span>
                     <motion.div
-                      animate={{ 
+                      animate={{
                         rotate: openIndex === i ? 45 : 0,
                         scale: openIndex === i ? 1.2 : 1
                       }}
@@ -328,7 +301,7 @@ function ContactSection() {
     const centerY = top + height / 2;
     const distanceX = clientX - centerX;
     const distanceY = clientY - centerY;
-    
+
     // Magnetic pull & Parallax
     x.set(distanceX * 0.3);
     y.set(distanceY * 0.3);
@@ -342,7 +315,7 @@ function ContactSection() {
   const title = "LET'S TALK";
 
   return (
-    <section 
+    <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -350,7 +323,7 @@ function ContactSection() {
     >
       {/* Background Moving Marquee */}
       <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none overflow-hidden">
-        <motion.div 
+        <motion.div
           animate={{ x: [0, -1000] }}
           transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
           className="text-[30vw] font-bold whitespace-nowrap flex gap-20"
@@ -362,11 +335,11 @@ function ContactSection() {
       </div>
 
       <div className="relative z-10 w-full max-w-5xl">
-        <motion.div 
+        <motion.div
           style={{ x: textX, y: textY }}
           className="mb-4"
         >
-          <h2 
+          <h2
             className="text-[14vw] md:text-[10vw] font-bold leading-none tracking-tighter text-[#D4FF00] uppercase flex justify-center overflow-hidden"
           >
             {title.split("").map((char, i) => (
@@ -375,10 +348,10 @@ function ContactSection() {
                 initial={{ y: "100%", opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ 
-                  duration: 1, 
-                  delay: i * 0.05, 
-                  ease: [0.16, 1, 0.3, 1] 
+                transition={{
+                  duration: 1,
+                  delay: i * 0.05,
+                  ease: [0.16, 1, 0.3, 1]
                 }}
                 className="inline-block"
               >
@@ -387,8 +360,8 @@ function ContactSection() {
             ))}
           </h2>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           style={{ x: useTransform(textX, (v) => v * 0.5), y: useTransform(textY, (v) => v * 0.5) }}
           className="overflow-hidden mb-24"
         >
@@ -420,9 +393,9 @@ function ContactSection() {
               <span className="text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2 relative z-20 group-hover:text-black transition-colors duration-500">
                 Contact <span className="text-xl">↗</span>
               </span>
-              
+
               {/* Lime Dot */}
-              <motion.div 
+              <motion.div
                 className="absolute bottom-6 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#D4FF00] rounded-full z-20"
                 animate={{
                   y: [0, -6, 0],
@@ -434,7 +407,7 @@ function ContactSection() {
                   ease: "easeInOut"
                 }}
               />
-              
+
               {/* Hover Fill */}
               <motion.div
                 className="absolute inset-0 bg-[#D4FF00] origin-bottom rounded-full"
@@ -448,23 +421,23 @@ function ContactSection() {
       </div>
 
       {/* Dynamic Background Glows */}
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           x: [0, 100, -100, 0],
           y: [0, -100, 100, 0],
           scale: [1, 1.2, 0.8, 1]
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4FF00]/10 blur-[80px] rounded-full pointer-events-none" 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4FF00]/10 blur-[80px] rounded-full pointer-events-none glow-effect"
       />
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           x: [0, -150, 150, 0],
           y: [0, 150, -150, 0],
           scale: [1, 0.8, 1.2, 1]
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none" 
+        className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none glow-effect"
       />
     </section>
   );
@@ -472,71 +445,212 @@ function ContactSection() {
 
 function StudioFooter() {
   return (
-    <footer className="bg-white text-black py-20 px-6 md:px-12 lg:px-20 font-sans selection:bg-black selection:text-white">
-      <div className="max-w-[1800px] mx-auto">
+    <footer className="bg-black text-white pt-32 pb-12 px-6 md:px-12 lg:px-20 font-sans selection:bg-[#D4FF00] selection:text-black border-t border-white/5 relative overflow-hidden">
+      <div className="max-w-[1800px] mx-auto relative z-10">
         {/* Top Header */}
-        <div className="flex justify-between items-center mb-20">
-          <div className="text-xl font-bold tracking-tighter">Möbius®</div>
-          <nav className="hidden md:flex gap-12 text-[10px] font-bold tracking-widest uppercase">
-            <a href="#" className="hover:opacity-50 transition-opacity">Work</a>
-            <a href="#" className="hover:opacity-50 transition-opacity">Studio</a>
-            <a href="#" className="hover:opacity-50 transition-opacity">Feed</a>
-            <a href="#" className="hover:opacity-50 transition-opacity">Contact</a>
-          </nav>
+        <div className="flex justify-between items-center mb-32 md:mb-40">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-xl md:text-2xl font-bold tracking-tighter"
+          >
+            Möbius®
+          </motion.div>
+          <motion.nav
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.1 }
+              }
+            }}
+            className="hidden md:flex gap-12 text-[10px] font-bold tracking-widest uppercase"
+          >
+            {['Work', 'Studio', 'Feed', 'Contact'].map((item) => (
+              <motion.a
+                key={item}
+                href="#"
+                variants={{
+                  hidden: { opacity: 0, y: -10 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                whileHover={{ color: "#D4FF00" }}
+                className="hover:opacity-100 opacity-60 transition-colors"
+              >
+                {item}
+              </motion.a>
+            ))}
+          </motion.nav>
         </div>
 
         {/* Big Logo Section */}
-        <div className="relative mb-32">
-          <div className="flex justify-between items-start">
-            <h2 className="text-[15vw] md:text-[18vw] font-bold leading-[0.8] tracking-tighter select-none">
-              Möbius®
+        <div className="relative mb-32 md:mb-48">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+            <h2 className="text-[20vw] md:text-[18vw] font-bold leading-[0.75] tracking-tighter select-none flex overflow-hidden">
+              {['M', 'ö', 'b', 'i', 'u', 's', '®'].map((char, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ y: "100%", opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    duration: 1.2,
+                    delay: i * 0.08,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  className="inline-block"
+                >
+                  {char}
+                </motion.span>
+              ))}
             </h2>
-            <div className="text-xl md:text-2xl font-bold tracking-tighter mt-4 md:mt-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.8 }}
+              className="text-xl md:text-2xl font-bold tracking-tighter text-[#D4FF00]"
+            >
               © 2018-26
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Bottom Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-20">
           {/* Newsletter */}
-          <div className="md:col-span-5 lg:col-span-4">
-            <p className="text-xs md:text-sm leading-relaxed mb-10 max-w-xs opacity-80">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="md:col-span-5 lg:col-span-4"
+          >
+            <p className="text-xs md:text-sm leading-relaxed mb-10 max-w-xs opacity-60 font-medium">
               Join our studio newsletter for thoughts on design, brand systems, and creative direction — sent occasionally, when there's something worth saying.
             </p>
             <div className="relative group max-w-md">
-              <input 
-                type="email" 
-                placeholder="YOUR EMAIL HERE" 
-                className="w-full bg-[#f5f5f5] border-none py-6 px-6 text-[10px] font-bold tracking-widest uppercase focus:ring-0 placeholder:text-black/30"
+              <input
+                type="email"
+                placeholder="YOUR EMAIL HERE"
+                className="w-full bg-white/5 border border-white/10 py-5 px-6 rounded-xl text-[10px] font-bold tracking-widest uppercase focus:outline-none focus:border-[#D4FF00] focus:bg-white/10 transition-all placeholder:text-white/30 text-white"
               />
-              <button className="absolute right-6 top-1/2 -translate-y-1/2 hover:translate-x-1 transition-transform">
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: -15, backgroundColor: "#D4FF00", color: "black" }}
+                whileTap={{ scale: 0.95 }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center bg-white/10 transition-colors"
+              >
                 <ArrowDownToLine className="w-4 h-4 -rotate-90" />
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Social */}
           <div className="md:col-span-3 md:col-start-7 lg:col-span-2 lg:col-start-7">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8">Social</span>
-            <div className="flex flex-col gap-4">
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">LinkedIn</a>
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">X (Twitter)</a>
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">Instagram</a>
-            </div>
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+            >
+              Social
+            </motion.span>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 }
+                }
+              }}
+              className="flex flex-col gap-6"
+            >
+              {['LinkedIn', 'X (Twitter)', 'Instagram'].map((social) => (
+                <motion.a
+                  key={social}
+                  href="#"
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  whileHover={{ x: 10, color: "#D4FF00" }}
+                  className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tighter opacity-80 hover:opacity-100 transition-colors flex items-center gap-4"
+                >
+                  {social} <span className="opacity-0 -translate-x-4 transition-all duration-300 text-sm">↗</span>
+                </motion.a>
+              ))}
+            </motion.div>
           </div>
 
           {/* Legal */}
           <div className="md:col-span-3 lg:col-span-2">
-            <span className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8">Legal</span>
-            <div className="flex flex-col gap-4">
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">Privacy Policy</a>
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">Terms of Service</a>
-              <a href="#" className="text-2xl md:text-4xl font-bold tracking-tighter hover:opacity-50 transition-opacity">404</a>
-            </div>
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+            >
+              Legal
+            </motion.span>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+                }
+              }}
+              className="flex flex-col gap-6"
+            >
+              {['Privacy Policy', 'Terms of Service', '404'].map((legal) => (
+                <motion.a
+                  key={legal}
+                  href="#"
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                  }}
+                  whileHover={{ x: 10, color: "#D4FF00" }}
+                  className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tighter opacity-80 hover:opacity-100 transition-colors flex items-center gap-4"
+                >
+                  {legal} <span className="opacity-0 -translate-x-4 transition-all duration-300 text-sm">↗</span>
+                </motion.a>
+              ))}
+            </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Dynamic Background Glows (matching ContactSection) */}
+      <motion.div
+        animate={{
+          x: [0, 100, -100, 0],
+          y: [0, -100, 100, 0],
+          scale: [1, 1.2, 0.8, 1]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#D4FF00]/10 blur-[80px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3 glow-effect"
+      />
+      <motion.div
+        animate={{
+          x: [0, -150, 150, 0],
+          y: [0, 150, -150, 0],
+          scale: [1, 0.8, 1.2, 1]
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute top-0 left-0 w-[600px] h-[600px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3 glow-effect"
+      />
     </footer>
   );
 }
@@ -579,8 +693,8 @@ export default function App() {
 
       const target = e.target as HTMLElement;
       // Optimized check: only check direct tag or parent for common interactive elements
-      const isClickable = target.tagName === 'BUTTON' || target.tagName === 'A' || 
-                         target.parentElement?.tagName === 'BUTTON' || target.parentElement?.tagName === 'A';
+      const isClickable = target.tagName === 'BUTTON' || target.tagName === 'A' ||
+        target.parentElement?.tagName === 'BUTTON' || target.parentElement?.tagName === 'A';
       cursorScale.set(isClickable ? 2.5 : 1);
     };
 
@@ -610,9 +724,9 @@ export default function App() {
         }}
       />
 
-      {/* Noise Texture Overlay */}
+      {/* Noise Texture Overlay — GPU accelerated */}
       <div className="fixed inset-0 pointer-events-none z-[9998] opacity-[0.04] overflow-hidden">
-        <div className="absolute inset-[-200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat animate-noise" />
+        <div className="absolute inset-[-200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat animate-noise gpu-accelerated" />
       </div>
 
       {/* SVG Filters for Liquid Distortion */}
@@ -631,9 +745,9 @@ export default function App() {
         </filter>
       </svg>
 
-      {/* Dynamic Background Gradient */}
-      <motion.div 
-        className="fixed inset-0 pointer-events-none z-0 opacity-20"
+      {/* Dynamic Background Gradient — GPU composited */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none z-0 opacity-20 will-change-auto"
         style={{
           background: useTransform(
             [smoothX, smoothY],
@@ -658,10 +772,15 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <main className="relative">
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="relative"
+      >
         <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[60vh]">
           <div className="p-6 md:p-12 flex flex-col justify-center">
-            <motion.h1 
+            <motion.h1
               initial="hidden"
               animate="visible"
               variants={{
@@ -688,7 +807,7 @@ export default function App() {
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
-              <motion.span 
+              <motion.span
                 variants={{
                   hidden: { opacity: 0, scale: 0.8 },
                   visible: { opacity: 0.8, scale: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
@@ -699,42 +818,42 @@ export default function App() {
               </motion.span>
             </motion.h1>
           </div>
-          
+
           <div className="relative p-6 lg:p-0 flex items-center justify-center">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
               animate={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
               className="w-[90%] h-[90%] bg-[#1a1a1a] rounded-2xl overflow-hidden relative group"
             >
               {/* Layered images for that "repeated" look */}
-              <motion.img 
+              <motion.img
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.8 }}
-                src="https://picsum.photos/seed/tokyo-art-1/1200/1600" 
-                alt="Artistic visual" 
+                src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                alt="Artistic visual"
                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-700"
                 referrerPolicy="no-referrer"
               />
-              <img 
-                src="https://picsum.photos/seed/tokyo-art-1/1200/1600" 
-                alt="Artistic visual" 
+              <img
+                src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                alt="Artistic visual"
                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-20 mix-blend-screen translate-x-2 translate-y-2 pointer-events-none"
                 referrerPolicy="no-referrer"
               />
-              <img 
-                src="https://picsum.photos/seed/tokyo-art-1/1200/1600" 
-                alt="Artistic visual" 
+              <img
+                src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                alt="Artistic visual"
                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-10 mix-blend-screen -translate-x-2 -translate-y-2 pointer-events-none"
                 referrerPolicy="no-referrer"
               />
-              
+
               {/* Overlay for that "distorted" feel from the image */}
               <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent pointer-events-none" />
-              
+
               {/* Social Icon */}
               <div className="absolute bottom-6 right-6">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
                 >
@@ -745,31 +864,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Ticker Section */}
-        <div className="w-full bg-white py-4 overflow-hidden border-y border-white/10">
-          <div className="flex whitespace-nowrap animate-marquee">
-            {[...Array(10)].map((_, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                className="flex items-center text-black font-bold uppercase tracking-tighter text-sm md:text-base"
-              >
-                <span className="mx-8">Art Direction</span>
-                <div className="w-2 h-2 bg-black rounded-full" />
-                <span className="mx-8">Branding</span>
-                <div className="w-2 h-2 bg-black rounded-full" />
-                <span className="mx-8">Design</span>
-                <div className="w-2 h-2 bg-black rounded-full" />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
         {/* Massive Portfolio Section */}
-        <section className="p-6 md:p-12 py-24 relative overflow-hidden">
+        <section className="p-6 md:p-12 pt-4 pb-24 relative overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -778,7 +874,7 @@ export default function App() {
             className="flex flex-col items-start"
           >
             <div className="relative w-full">
-              <motion.h2 
+              <motion.h2
                 initial={{ opacity: 0, y: 100 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -786,14 +882,14 @@ export default function App() {
                 className="text-[15vw] md:text-[20vw] font-bold leading-[0.8] tracking-tighter flex items-baseline relative"
               >
                 Portfolio
-                <motion.span 
-                  animate={{ 
+                <motion.span
+                  animate={{
                     opacity: [0, 1, 0, 1, 0],
                     x: [0, 5, -5, 5, 0],
                   }}
-                  transition={{ 
-                    duration: 0.2, 
-                    repeat: Infinity, 
+                  transition={{
+                    duration: 0.2,
+                    repeat: Infinity,
                     repeatDelay: 3,
                     ease: "linear"
                   }}
@@ -803,7 +899,7 @@ export default function App() {
                 </motion.span>
                 <span className="text-[4vw] md:text-[5vw] font-medium ml-2">™</span>
               </motion.h2>
-              
+
               {/* Use for Free Button */}
               <div className="absolute bottom-[10%] right-0 md:right-12">
                 <motion.button
@@ -831,25 +927,25 @@ export default function App() {
 
         {/* Experience Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-6 md:p-12 py-24 border-t border-white/10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
             whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
             viewport={{ once: true }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="aspect-[3/4] rounded-3xl overflow-hidden bg-[#1a1a1a]"
           >
-            <motion.img 
+            <motion.img
               whileHover={{ scale: 1.1 }}
               transition={{ duration: 1.2 }}
-              src="https://picsum.photos/seed/portrait-1/1200/1600" 
-              alt="Portrait" 
+              src="https://picsum.photos/seed/portrait-1/1200/1600"
+              alt="Portrait"
               className="w-full h-full object-cover grayscale"
               referrerPolicy="no-referrer"
             />
           </motion.div>
-          
+
           <div className="flex flex-col justify-center items-start">
-            <motion.h3 
+            <motion.h3
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -858,7 +954,7 @@ export default function App() {
             >
               13+ years™ of digital form, sharp interactions, and relentless creative discipline and effort.
             </motion.h3>
-            
+
             <div className="flex items-center justify-between w-full">
               <motion.button
                 whileHover={{ scale: 1.05, backgroundColor: "white", color: "black" }}
@@ -866,8 +962,8 @@ export default function App() {
               >
                 Contact
               </motion.button>
-              
-              <motion.div 
+
+              <motion.div
                 whileHover={{ scale: 1.1, rotate: -5 }}
                 className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
               >
@@ -881,8 +977,8 @@ export default function App() {
         <div className="w-full bg-white py-4 overflow-hidden border-y border-white/10">
           <div className="flex whitespace-nowrap animate-marquee">
             {[...Array(10)].map((_, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -950,7 +1046,7 @@ export default function App() {
         {/* Services Section */}
         <section className="bg-black py-24">
           <div className="px-6 md:px-12 mb-12">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -977,7 +1073,7 @@ export default function App() {
 
           {/* Services List */}
           <div className="px-6 md:px-12 max-w-7xl ml-auto">
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, margin: "-100px" }}
@@ -1029,15 +1125,15 @@ export default function App() {
                   key={service.id}
                   variants={{
                     hidden: { opacity: 0, x: -50 },
-                    show: { 
-                      opacity: 1, 
+                    show: {
+                      opacity: 1,
                       x: 0,
                       transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
                     }
                   }}
                   className="group border-b border-white/10 py-12 flex flex-col md:flex-row items-start md:items-center gap-8 hover:bg-white/5 transition-colors px-4 -mx-4 rounded-lg overflow-hidden relative"
                 >
-                  <motion.div 
+                  <motion.div
                     className="absolute inset-0 bg-white/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700 ease-[0.16,1,0.3,1]"
                   />
                   <span className="text-sm font-bold opacity-40 group-hover:opacity-100 transition-opacity relative z-10">{service.id}</span>
@@ -1057,9 +1153,9 @@ export default function App() {
           </div>
         </section>
 
-        {/* Selected Works Gallery (20 Images) */}
+        {/* Selected Works Gallery (4 Images) */}
         <section className="bg-black py-24 border-t border-white/10">
-          <div className="px-6 md:px-12 mb-24">
+          <div className="px-6 md:px-12 mb-16">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1067,7 +1163,7 @@ export default function App() {
               className="flex flex-col md:flex-row justify-between items-end gap-8"
             >
               <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
-                Selected<br />Works<span className="text-2xl md:text-4xl opacity-30 ml-4">(20)</span>
+                Selected<br />Works<span className="text-2xl md:text-4xl opacity-30 ml-4">(4)</span>
               </h2>
               <p className="text-white/40 max-w-xs text-sm uppercase tracking-widest leading-relaxed">
                 A curated archive of visual explorations, digital products, and artistic directions from the past decade.
@@ -1076,8 +1172,8 @@ export default function App() {
           </div>
 
           <div className="px-6 md:px-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(20)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
                 <GalleryItem key={i} index={i} />
               ))}
             </div>
@@ -1088,7 +1184,7 @@ export default function App() {
         <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -1098,7 +1194,7 @@ export default function App() {
               </motion.span>
             </div>
             <div className="lg:col-span-8">
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, margin: "-100px" }}
@@ -1143,7 +1239,7 @@ export default function App() {
         <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -1153,7 +1249,7 @@ export default function App() {
               </motion.span>
             </div>
             <div className="lg:col-span-8">
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
@@ -1194,7 +1290,7 @@ export default function App() {
         <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-4">
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -1204,7 +1300,7 @@ export default function App() {
               </motion.span>
             </div>
             <div className="lg:col-span-8">
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
@@ -1262,7 +1358,7 @@ export default function App() {
             >
               <AnimatedHeadline />
             </motion.div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
               <div className="lg:col-span-4">
                 <motion.div
@@ -1272,9 +1368,9 @@ export default function App() {
                   transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
                   className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a]"
                 >
-                  <img 
-                    src="https://picsum.photos/seed/fashion-1/800/1200" 
-                    alt="Creative Portrait" 
+                  <img
+                    src="https://picsum.photos/seed/fashion-1/800/1200"
+                    alt="Creative Portrait"
                     className="w-full h-full object-cover grayscale"
                     referrerPolicy="no-referrer"
                   />
@@ -1292,7 +1388,7 @@ export default function App() {
                   >
                     We bridge creative direction with real-world execution, combining design and development into one <span className="text-white font-bold">seamless workflow</span> to deliver digital experiences that are thoughtful, fast, and built to perform.
                   </motion.p>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -1309,9 +1405,9 @@ export default function App() {
                   transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
                   className="w-full md:w-1/2 aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a]"
                 >
-                  <img 
-                    src="https://picsum.photos/seed/eyes-1/1200/800" 
-                    alt="Creative Detail" 
+                  <img
+                    src="https://picsum.photos/seed/eyes-1/1200/800"
+                    alt="Creative Detail"
                     className="w-full h-full object-cover grayscale"
                     referrerPolicy="no-referrer"
                   />
@@ -1319,9 +1415,9 @@ export default function App() {
               </div>
             </div>
           </div>
-          
+
           {/* Subtle Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none glow-effect" />
         </section>
 
         {/* Floating Cards Section */}
@@ -1350,11 +1446,11 @@ export default function App() {
               { id: 14, img: "minimal-1", label: "Less", x: "55%", y: "85%", w: "200px", h: "120px", speed: -45 },
               { id: 15, img: "tech-1", label: "Future", x: "90%", y: "10%", w: "120px", h: "180px", speed: 55 },
             ].map((card) => (
-              <Card 
-                key={card.id} 
-                {...card} 
-                smoothX={smoothX} 
-                smoothY={smoothY} 
+              <Card
+                key={card.id}
+                {...card}
+                smoothX={smoothX}
+                smoothY={smoothY}
               />
             ))}
           </div>
@@ -1362,7 +1458,7 @@ export default function App() {
 
         {/* Social Links Bar */}
         <section className="border-y border-white/10 bg-black">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
@@ -1403,7 +1499,7 @@ export default function App() {
         <ContactSection />
 
         <StudioFooter />
-      </main>
+      </motion.main>
     </div>
   );
 }
@@ -1459,13 +1555,13 @@ function Card({ img, label, x, y, w, h, speed, smoothX, smoothY }: any) {
       viewport={{ once: true }}
       className="absolute rounded-2xl overflow-hidden bg-[#1a1a1a] shadow-2xl group cursor-pointer perspective-1000 will-change-transform"
     >
-      <motion.div 
+      <motion.div
         style={{ transform: "translateZ(30px)" }}
         className="w-full h-full relative"
       >
-        <img 
-          src={`https://picsum.photos/seed/${img}/400/400`} 
-          alt={label || "Artistic visual"} 
+        <img
+          src={`https://picsum.photos/seed/${img}/400/400`}
+          alt={label || "Artistic visual"}
           loading="lazy"
           className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
           referrerPolicy="no-referrer"
@@ -1474,7 +1570,7 @@ function Card({ img, label, x, y, w, h, speed, smoothX, smoothY }: any) {
         <div className="absolute inset-0 bg-black/10 pointer-events-none opacity-20" />
       </motion.div>
       {label && (
-        <div 
+        <div
           style={{ transform: "translateZ(60px)" }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
         >
