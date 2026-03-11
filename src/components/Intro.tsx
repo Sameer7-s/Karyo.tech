@@ -1,13 +1,13 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { SparklesCore } from "./ui/sparkles";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 /* ─────────────────────────────────────────
-   Glassmorphism Navbar
+   Premium Integrated Navbar
+   - Full-width, Sticky, Premium Glassmorphism
 ───────────────────────────────────────── */
 function Navbar() {
-    const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -16,326 +16,299 @@ function Navbar() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    const links = ["Home", "Gallery", "Work", "Contact"];
+    const links = [
+        { name: "Home", href: "#" },
+        { name: "Gallery", href: "#" },
+        { name: "Work", href: "#" },
+        { name: "Contact", href: "#" }
+    ];
 
     return (
         <motion.header
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="fixed top-0 left-0 right-0 z-[99998]"
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ease-in-out border-b ${scrolled
+                ? "py-3 bg-[rgba(5,5,10,0.75)] backdrop-blur-[24px] border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+                : "py-6 bg-transparent border-transparent"
+                }`}
         >
-            <div
-                className={`mx-4 mt-4 rounded-2xl border border-white/10 px-6 py-3 transition-all duration-500 ${scrolled
-                        ? "bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-                        : "bg-white/[0.03] backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
-                    }`}
-                style={{
-                    background: scrolled
-                        ? "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)"
-                        : "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
-                }}
-            >
-                <div className="grid grid-cols-3 items-center gap-4">
-
-                    {/* LEFT — Brand */}
-                    <motion.div
-                        className="flex items-center"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            <div className="max-w-[1800px] mx-auto px-8 md:px-12 grid grid-cols-3 items-center">
+                {/* LEFT — Brand */}
+                <div className="flex items-center">
+                    <motion.a
+                        href="/"
+                        className="group flex items-center gap-1.5"
                     >
-                        <span className="text-base font-bold tracking-[0.12em] text-white select-none">
-                            KARYO<span className="text-[10px] align-super ml-0.5 opacity-60">®</span>
+                        <span className="text-lg font-bold tracking-[0.15em] text-white select-none">
+                            KARYO<span className="text-[10px] align-super ml-0.5 opacity-50 group-hover:opacity-100 transition-opacity">®</span>
                         </span>
-                    </motion.div>
+                    </motion.a>
+                </div>
 
-                    {/* CENTER — Nav Links (desktop) */}
-                    <div className="hidden md:flex flex-col items-center gap-1">
-                        <span className="text-[8px] font-bold tracking-[0.3em] uppercase text-white/30 mb-1">
-                            Quick Links
-                        </span>
-                        <nav className="flex items-center gap-7">
-                            {links.map((link, i) => (
-                                <motion.a
-                                    key={link}
-                                    href="#"
-                                    initial={{ opacity: 0, y: -6 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.8, delay: 0.6 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                                    className="relative text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60 group transition-colors duration-300 hover:text-[#4FC3F7]"
-                                >
-                                    {link}
-                                    {/* hover underline glow */}
-                                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-[#4FC3F7] shadow-[0_0_8px_#4FC3F7] transition-all duration-300 group-hover:w-full rounded-full" />
-                                    {/* hover top glow dot */}
-                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#4FC3F7] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_6px_#4FC3F7]" />
-                                </motion.a>
-                            ))}
-                        </nav>
-                    </div>
+                {/* CENTER — Quick Links */}
+                <div className="hidden md:flex flex-col items-center">
+                    <span className="text-[7px] font-black tracking-[0.4em] uppercase text-white/20 mb-2">
+                        Quick Links
+                    </span>
+                    <nav className="flex items-center gap-10">
+                        {links.map((link, i) => (
+                            <motion.a
+                                key={link.name}
+                                href={link.href}
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.4 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                                className="relative text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-500 group"
+                            >
+                                {link.name}
+                                {/* Futuristic blue glow accent on hover */}
+                                <span className="absolute -bottom-1.5 left-0 w-0 h-[1.5px] bg-[#4FC3F7] shadow-[0_0_12px_#4FC3F7] transition-all duration-500 group-hover:w-full rounded-full" />
+                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#4FC3F7] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-[0_0_8px_#4FC3F7] scale-0 group-hover:scale-100" />
+                            </motion.a>
+                        ))}
+                    </nav>
+                </div>
 
-                    {/* RIGHT — Info text (desktop) + hamburger (mobile) */}
-                    <div className="flex items-center justify-end gap-4">
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 1, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                            className="hidden md:flex flex-col items-end text-right"
-                        >
-                            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/35">
-                                Based in Tokyo 東京
-                            </span>
-                            <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-white/25">
-                                Art Director + Framer Developer
-                            </span>
-                        </motion.div>
-
-                        {/* Hamburger (mobile only) */}
-                        <button
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px] group"
-                            aria-label="Toggle menu"
-                        >
-                            <motion.span
-                                animate={menuOpen ? { rotate: 45, y: 5.5, width: "20px" } : { rotate: 0, y: 0, width: "20px" }}
-                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                className="block h-[1.5px] bg-white/80 rounded-full origin-center"
-                                style={{ width: 20 }}
-                            />
-                            <motion.span
-                                animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-                                transition={{ duration: 0.3 }}
-                                className="block h-[1.5px] bg-white/80 rounded-full"
-                                style={{ width: 14 }}
-                            />
-                            <motion.span
-                                animate={menuOpen ? { rotate: -45, y: -5.5, width: "20px" } : { rotate: 0, y: 0, width: "20px" }}
-                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                className="block h-[1.5px] bg-white/80 rounded-full origin-center"
-                                style={{ width: 20 }}
-                            />
-                        </button>
-                    </div>
+                {/* RIGHT — Role / Location */}
+                <div className="flex flex-col items-end text-right">
+                    <motion.span
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                        className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/40"
+                    >
+                        San Francisco, CA
+                    </motion.span>
+                    <motion.span
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.7 }}
+                        className="text-[9px] font-medium tracking-[0.15em] uppercase text-[#4FC3F7]/60"
+                    >
+                        AI Automation Agency
+                    </motion.span>
                 </div>
             </div>
-
-            {/* Mobile Dropdown Menu */}
-            <AnimatePresence>
-                {menuOpen && (
-                    <motion.div
-                        key="mobile-menu"
-                        initial={{ opacity: 0, y: -12, scaleY: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                        exit={{ opacity: 0, y: -12, scaleY: 0.95 }}
-                        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                        className="mx-4 mt-2 rounded-2xl border border-white/10 overflow-hidden origin-top"
-                        style={{
-                            background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)",
-                            backdropFilter: "blur(24px)",
-                            WebkitBackdropFilter: "blur(24px)",
-                        }}
-                    >
-                        <nav className="flex flex-col px-6 py-4 gap-4">
-                            {links.map((link, i) => (
-                                <motion.a
-                                    key={link}
-                                    href="#"
-                                    onClick={() => setMenuOpen(false)}
-                                    initial={{ opacity: 0, x: -12 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.5, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
-                                    className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70 hover:text-[#4FC3F7] transition-colors duration-300"
-                                >
-                                    {link}
-                                </motion.a>
-                            ))}
-                            <div className="border-t border-white/10 pt-3 mt-1">
-                                <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/30">Based in Tokyo 東京</p>
-                                <p className="text-[9px] font-medium tracking-[0.1em] uppercase text-white/20 mt-1">Art Director + Framer Developer</p>
-                            </div>
-                        </nav>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </motion.header>
     );
 }
 
 /* ─────────────────────────────────────────
-   Cursor Parallax for Particles
+   Interactive KARYO Letter
 ───────────────────────────────────────── */
-function useParallaxMouse(sensitivity = 0.02) {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const smoothX = useSpring(x, { damping: 40, stiffness: 80 });
-    const smoothY = useSpring(y, { damping: 40, stiffness: 80 });
-
-    useEffect(() => {
-        const onMove = (e: MouseEvent) => {
-            x.set((e.clientX / window.innerWidth - 0.5) * sensitivity * 120);
-            y.set((e.clientY / window.innerHeight - 0.5) * sensitivity * 120);
-        };
-        window.addEventListener("mousemove", onMove, { passive: true });
-        return () => window.removeEventListener("mousemove", onMove);
-    }, [x, y, sensitivity]);
-
-    return { smoothX, smoothY };
+function Letter({ char }: { char: string;[key: string]: any }) {
+    return (
+        <motion.span
+            variants={{
+                hidden: { opacity: 0, y: 40, scale: 0.85 },
+                visible: {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+                }
+            }}
+            className="inline-block karyo-letter-glow text-white opacity-95"
+        >
+            {char}
+        </motion.span>
+    );
 }
 
 /* ─────────────────────────────────────────
    Main Intro Component
 ───────────────────────────────────────── */
-export function Intro() {
-    const { smoothX, smoothY } = useParallaxMouse(0.025);
+export function Intro({ scrollProgress }: { scrollProgress?: any }) {
+    // Mouse tracking for parallax
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
-    // Translate particles slightly on cursor move for parallax depth
-    const layer1X = useTransform(smoothX, v => v * 1.0);
-    const layer1Y = useTransform(smoothY, v => v * 1.0);
-    const layer2X = useTransform(smoothX, v => v * 1.6);
-    const layer2Y = useTransform(smoothY, v => v * 1.6);
+    // Smooth springs for 3D parallax
+    const rotateX = useSpring(useTransform(mouseY, (y: number) => (y - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * -0.008), { damping: 30, stiffness: 100 });
+    const rotateY = useSpring(useTransform(mouseX, (x: number) => (x - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.008), { damping: 30, stiffness: 100 });
+    const translX = useSpring(useTransform(mouseX, (x: number) => (x - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.012), { damping: 35, stiffness: 80 });
+    const translY = useSpring(useTransform(mouseY, (y: number) => (y - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * 0.012), { damping: 35, stiffness: 80 });
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
+        };
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    const titleLetters = "KARYO".split("");
 
     return (
-        <div className="h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden relative">
-
-            {/* ── Glassmorphism Navbar ── */}
+        <div className="h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden relative selection:bg-[#4FC3F7] selection:text-black">
             <Navbar />
 
-            {/* ── Particle Background Layer 1 (white stars, parallax) ── */}
-            <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{ x: layer1X, y: layer1Y }}
-            >
+            {/* ── Background: Deep Starfield ── */}
+            <div className="absolute inset-0 z-0 scale-110">
                 <SparklesCore
-                    id="tsparticlesIntroWhite"
+                    id="heroStarsDense"
                     background="transparent"
-                    minSize={0.5}
-                    maxSize={1.2}
-                    particleDensity={90}
+                    minSize={0.4}
+                    maxSize={1.1}
+                    particleDensity={100}
                     className="w-full h-full"
                     particleColor="#FFFFFF"
-                    speed={0.7}
+                    speed={0.3}
                 />
-            </motion.div>
+            </div>
 
-            {/* ── Particle Background Layer 2 (blue highlights, deeper parallax) ── */}
-            <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{ x: layer2X, y: layer2Y }}
-            >
+            {/* ── Background: Cyber Blue Highlights ── */}
+            <div className="absolute inset-0 z-0">
                 <SparklesCore
-                    id="tsparticlesIntroBlue"
+                    id="heroStarsBlue"
                     background="transparent"
                     minSize={0.8}
                     maxSize={1.8}
-                    particleDensity={35}
+                    particleDensity={25}
                     className="w-full h-full"
                     particleColor="#4FC3F7"
-                    speed={0.4}
+                    speed={0.5}
                 />
-            </motion.div>
+            </div>
 
-            {/* ── Central hero content ── */}
-            <div className="relative z-20 flex flex-col items-center text-center px-6">
+            {/* ── Central Hero Content Container ── */}
+            <div className="relative z-20 flex flex-col items-center text-center px-6 perspective-[1500px]">
 
-                {/* KARYO Title with glow */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 40, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-[18vw] md:text-[15vw] lg:text-[13vw] font-black tracking-tighter leading-[0.85] text-white uppercase select-none"
-                    style={{
-                        textShadow: "0 0 80px rgba(79,195,247,0.25), 0 0 200px rgba(79,195,247,0.1)",
-                    }}
-                >
-                    KARYO
-                </motion.h1>
-
-                {/* Tagline */}
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 0.55, y: 0 }}
-                    transition={{ duration: 1.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-5 text-[10px] md:text-sm lg:text-base font-light text-white tracking-[0.4em] uppercase"
-                >
-                    Build.&nbsp; Automate.&nbsp; Scale.
-                </motion.p>
-
-                {/* Glowing separator line */}
+                {/* 3D Parallax Title Group */}
                 <motion.div
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    animate={{ scaleX: 1, opacity: 1 }}
-                    transition={{ duration: 2, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-8 origin-center"
+                    style={{
+                        rotateX,
+                        rotateY,
+                        x: translX,
+                        y: translY,
+                        transformStyle: "preserve-3d"
+                    }}
+                    className="relative active:scale-95 transition-transform duration-500"
                 >
-                    <div className="relative w-64 md:w-96 h-px">
-                        {/* Base line */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4FC3F7]/60 to-transparent rounded-full" />
-                        {/* Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4FC3F7] to-transparent rounded-full blur-sm opacity-60" />
-                    </div>
+                    {/* Cinematic Title Reveal */}
+                    <motion.h1
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            visible: {
+                                transition: { staggerChildren: 0.08, delayChildren: 0.4 }
+                            }
+                        }}
+                        className="text-[22vw] md:text-[18vw] font-black tracking-[-0.04em] leading-[0.8] uppercase select-none relative"
+                    >
+                        {titleLetters.map((char, i) => (
+                            <Letter key={i} char={char} />
+                        ))}
+                    </motion.h1>
+
+                    {/* Ambient Glow behind title */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 2.5, delay: 0.8, ease: "easeOut" }}
+                        className="absolute inset-0 -z-10 bg-radial-gradient from-[#4FC3F7]/15 via-transparent to-transparent blur-[80px]"
+                        style={{ transform: "translateZ(-40px)" }}
+                    />
                 </motion.div>
 
-                {/* Dense center sparkle burst (original) */}
+                {/* Tagline Animation */}
+                <motion.p
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 0.6, y: 0 }}
+                    transition={{ duration: 1.5, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-10 text-[10px] md:text-xs lg:text-sm font-light text-white tracking-[0.5em] uppercase w-full overflow-hidden"
+                >
+                    <span className="block translate-y-0">Build.&nbsp; Automate.&nbsp; Scale.</span>
+                </motion.p>
+
+                {/* Energy Pulse Waves Below Title (Scroll Reactive) */}
+                <div className="relative w-full max-w-lg mt-12 flex flex-col items-center gap-4">
+                    {[0, 1].map((i) => {
+                        // Waves expand and fade as user scrolls
+                        const waveScale = useTransform(scrollProgress || useMotionValue(0), [0, 1], [1, 1.5 + i * 0.5]);
+                        const waveOpacity = useTransform(scrollProgress || useMotionValue(0), [0, 0.5, 1], [1, 0.5, 0]);
+                        const waveY = useTransform(scrollProgress || useMotionValue(0), [0, 1], [0, 50 * (i + 1)]);
+
+                        return (
+                            <motion.div
+                                key={i}
+                                style={{ scaleX: waveScale, opacity: waveOpacity, y: waveY }}
+                                initial={{ scaleX: 0, opacity: 0 }}
+                                animate={{ scaleX: 1, opacity: 1 }}
+                                transition={{ duration: 2, delay: 1.5 + i * 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                className={`h-[1px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7]/30 to-transparent blur-[1px] ${i === 1 ? 'w-[70%] opacity-50' : ''} animate-energy-pulse`}
+                            />
+                        );
+                    })}
+                </div>
+
+                {/* Dense Sparkle Center Line (Scroll Reactive) */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 2.5, delay: 0.4 }}
-                    className="relative w-[32rem] max-w-[90vw] h-32 mt-2"
+                    style={{
+                        opacity: useTransform(scrollProgress || useMotionValue(0), [0, 0.4, 0.8], [1, 0.5, 0]),
+                        scaleX: useTransform(scrollProgress || useMotionValue(0), [0, 1], [1, 1.4]),
+                        y: useTransform(scrollProgress || useMotionValue(0), [0, 1], [0, 80])
+                    }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                    className="relative w-[40rem] max-w-[90vw] h-24 mt-6 pointer-events-none"
                 >
-                    {/* Side gradients */}
+                    {/* Horizontal Laser Line */}
                     <motion.div
-                        initial={{ opacity: 0, scaleX: 0 }}
+                        initial={{ scaleX: 0, opacity: 0 }}
                         animate={{ opacity: 1, scaleX: 1 }}
-                        transition={{ duration: 2.2, delay: 0.6, ease: "easeInOut" }}
-                        className="absolute inset-x-0 top-0 h-[2px] w-full bg-gradient-to-r from-transparent via-indigo-500 to-transparent blur-sm origin-center"
-                    />
-                    <motion.div
-                        initial={{ opacity: 0, scaleX: 0 }}
-                        animate={{ opacity: 1, scaleX: 1 }}
-                        transition={{ duration: 2.2, delay: 0.9, ease: "easeInOut" }}
-                        className="absolute inset-x-16 top-0 h-[5px] w-[60%] bg-gradient-to-r from-transparent via-sky-500 to-transparent blur-sm origin-center"
+                        transition={{ duration: 1.8, delay: 0.6, ease: "easeInOut" }}
+                        className="absolute inset-x-0 top-0 h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7] to-transparent blur-sm origin-center"
                     />
                     <SparklesCore
                         background="transparent"
-                        minSize={0.3}
-                        maxSize={0.9}
-                        particleDensity={1200}
+                        minSize={0.2}
+                        maxSize={0.8}
+                        particleDensity={1000}
                         className="w-full h-full"
                         particleColor="#FFFFFF"
+                        speed={0.2}
                     />
-                    {/* Mask */}
-                    <div className="absolute inset-0 bg-black [mask-image:radial-gradient(320px_180px_at_top,transparent_20%,white)]" />
+                    {/* Shadow Mask to fade particles vertically */}
+                    <div className="absolute inset-0 bg-black [mask-image:radial-gradient(40%_50%_at_top,transparent_0%,white_100%)] opacity-80" />
                 </motion.div>
             </div>
 
-            {/* ── Ambient bottom glow (scroll glow effect) ── */}
+            {/* ── Cinematic Ambient Bottom Glow ── */}
             <motion.div
-                initial={{ opacity: 0, scaleX: 0.5 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                transition={{ duration: 3, delay: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px origin-center"
-            >
-                <div className="w-full h-full bg-gradient-to-r from-transparent via-[#4FC3F7]/40 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#4FC3F7]/20 to-transparent blur-xl" />
-            </motion.div>
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 2.5, delay: 1.8 }}
+                className="absolute bottom-0 left-0 right-0 h-[25vh] bg-gradient-to-t from-[#4FC3F7]/10 to-transparent pointer-events-none z-10"
+            />
 
-            {/* ── Scroll Indicator ── */}
+            {/* ── Scroll Indicator Overlay ── */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 2, delay: 2 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30 pointer-events-none"
+                transition={{ duration: 1.5, delay: 2.2 }}
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-40"
             >
-                <span className="text-[9px] uppercase tracking-[0.4em] font-bold text-white/30">
-                    Scroll to Explore
-                </span>
-                {/* Animated pill */}
-                <div className="w-5 h-8 rounded-full border border-white/20 flex justify-center pt-1.5">
+                <div className="flex flex-col items-center gap-1.5 opacity-40 hover:opacity-100 transition-opacity duration-500">
+                    <span className="text-[8px] uppercase tracking-[0.5em] font-black text-white">
+                        Discovery
+                    </span>
+                    <div className="w-[1px] h-12 bg-gradient-to-b from-white to-transparent" />
+                </div>
+
+                {/* Advanced Animated Scroll Pill */}
+                <div className="w-6 h-10 rounded-full border border-white/10 flex justify-center pt-2 bg-white/5 backdrop-blur-sm shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
                     <motion.div
-                        animate={{ y: [0, 10, 0], opacity: [0.8, 0.2, 0.8] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="w-1 h-1.5 rounded-full bg-[#4FC3F7] shadow-[0_0_6px_#4FC3F7]"
+                        animate={{
+                            y: [0, 14, 0],
+                            opacity: [0, 1, 0],
+                            scaleY: [1, 1.5, 1]
+                        }}
+                        transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                        className="w-1 h-2 rounded-full bg-[#4FC3F7] shadow-[0_0_10px_#4FC3F7]"
                     />
                 </div>
             </motion.div>

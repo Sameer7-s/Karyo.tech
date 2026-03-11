@@ -677,16 +677,16 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   const SCROLL_THRESHOLD = 800; // Increased threshold for a longer, more deliberate transition
 
   // Intro transforms — fade + scale + slide up + intense blur
-  const introOpacity = useTransform(smoothProgress, [0, 0.6, 1], [1, 0.4, 0]);
-  const introScale = useTransform(smoothProgress, [0, 1], [1, 0.85]);
-  const introY = useTransform(smoothProgress, [0, 1], ["0%", "-50%"]);
-  const introBlur = useTransform(smoothProgress, [0, 0.5, 1], [0, 8, 20]);
+  const introOpacity = useTransform(smoothProgress, [0, 0.8, 1], [1, 0.2, 0]);
+  const introScale = useTransform(smoothProgress, [0, 1], [1, 0.9]);
+  const introY = useTransform(smoothProgress, [0, 1], ["0%", "-100%"]);
+  const introBlur = useTransform(smoothProgress, [0, 0.5, 1], [0, 4, 12]);
   const introBlurStr = useTransform(introBlur, (v) => `blur(${v}px)`);
 
   // Main content transforms — dramatic slide up from way below + fade in
-  const mainY = useTransform(smoothProgress, [0, 1], ["60%", "0%"]);
-  const mainOpacity = useTransform(smoothProgress, [0, 0.3, 1], [0, 0.1, 1]);
-  const mainScale = useTransform(smoothProgress, [0, 1], [0.90, 1]);
+  const mainY = useTransform(smoothProgress, [0, 1], ["100%", "0%"]);
+  const mainOpacity = useTransform(smoothProgress, [0, 0.4, 1], [0, 0.3, 1]);
+  const mainScale = useTransform(smoothProgress, [0, 1], [0.95, 1]);
 
   // Manage Lenis — start only when intro is fully gone
   useEffect(() => {
@@ -706,22 +706,33 @@ function PageTransition({ children }: { children: React.ReactNode }) {
     }
   }, [introVisible]);
 
+  const transitionEndTime = useRef<number>(0);
+  const isTransitioning = useRef<boolean>(false);
+
   // Wheel + touch handling for the intro transition
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       const progress = scrollProgress.get();
+      const now = Date.now();
 
-      // Intro is fully hidden — let Lenis handle scroll, but check if user is at top scrolling up
+      // COOLING OFF: If we just finished the intro transition, eat all wheel events for 1200ms
+      // This prevents the "momentum" of a fast scroll from jumping deep into the page.
+      if (!introVisible && now - transitionEndTime.current < 1200) {
+        e.preventDefault();
+        window.scrollTo(0, 0); // Force stay at top during cooling off
+        return;
+      }
+
+      // 1. INTRO IS FULLY HIDDEN (Main site)
       if (progress >= 1) {
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         if (scrollTop <= 0 && e.deltaY < 0) {
-          // User is at top and scrolling up → bring intro back
+          // User is at top and scrolling UP → Bring back intro
           e.preventDefault();
-          accumulatedDelta.current += e.deltaY; // negative
+          accumulatedDelta.current += e.deltaY;
           const newProgress = Math.max(0, Math.min(1, 1 + accumulatedDelta.current / SCROLL_THRESHOLD));
           scrollProgress.set(newProgress);
           if (newProgress < 1) {
-            // Lock body scroll and destroy Lenis while transitioning
             document.body.style.overflow = "hidden";
             setIntroVisible(true);
             if (lenisRef.current) {
@@ -735,7 +746,8 @@ function PageTransition({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Intro is visible — drive the progress
+      // 2. INTRO IS VISIBLE (Transition phase)
+      // We block ALL default scrolling while in intro
       e.preventDefault();
       accumulatedDelta.current += e.deltaY;
       const newProgress = Math.max(0, Math.min(1, accumulatedDelta.current / SCROLL_THRESHOLD));
@@ -745,6 +757,13 @@ function PageTransition({ children }: { children: React.ReactNode }) {
         document.body.style.overflow = "auto";
         setIntroVisible(false);
         accumulatedDelta.current = 0;
+        transitionEndTime.current = Date.now(); // Mark completion for cooling off
+
+        // Explicit Reset: Ensure we start at the VERY top of the main site
+        window.scrollTo(0, 0);
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(0, { immediate: true });
+        }
       }
     };
 
@@ -808,7 +827,7 @@ function PageTransition({ children }: { children: React.ReactNode }) {
           pointerEvents: introVisible ? "auto" : "none",
         }}
       >
-        <Intro />
+        <Intro scrollProgress={smoothProgress} />
       </motion.div>
 
       {/* Main Content */}
@@ -916,429 +935,318 @@ export default function App() {
       />
 
       <PageTransition>
-        {/* Hero Section */}
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 1 }} // delayed to wait for intro
           className="relative"
         >
-          <section className="grid grid-cols-1 lg:grid-cols-2 min-h-[60vh]">
-            <div className="p-6 md:p-12 flex flex-col justify-center">
-              <motion.h1
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.02,
-                      delayChildren: 0.2
-                    }
-                  }
-                }}
-                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tighter max-w-3xl"
-              >
-                {"and Moments that Connect and Leave a Bold ".split("").map((char, i) => (
-                  <motion.span
-                    key={i}
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-                    }}
-                    className="inline-block"
-                  >
-                    {char === " " ? "\u00A0" : char}
-                  </motion.span>
-                ))}
-                <motion.span
+          {/* Scroll Section 1: Hero */}
+          <div className="scroll-section">
+            <section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+              <div className="p-6 md:p-12 flex flex-col justify-center">
+                <motion.h1
+                  initial="hidden"
+                  animate="visible"
                   variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 0.8, scale: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.02,
+                        delayChildren: 0.2
+                      }
+                    }
                   }}
-                  className="font-light italic inline-block"
+                  className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tighter max-w-3xl"
                 >
-                  イメージ。
-                </motion.span>
-              </motion.h1>
-            </div>
+                  {"and Moments that Connect and Leave a Bold ".split("").map((char, i) => (
+                    <motion.span
+                      key={i}
+                      variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                      }}
+                      className="inline-block"
+                    >
+                      {char === " " ? "\u00A0" : char}
+                    </motion.span>
+                  ))}
+                  <motion.span
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.8 },
+                      visible: { opacity: 0.8, scale: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    className="font-light italic inline-block"
+                  >
+                    イメージ。
+                  </motion.span>
+                </motion.h1>
+              </div>
 
-            <div className="relative p-6 lg:p-0 flex items-center justify-center">
+              <div className="relative p-6 lg:p-0 flex items-center justify-center">
+                <motion.div
+                  initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
+                  animate={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  className="w-[90%] h-[90%] bg-[#1a1a1a] rounded-2xl overflow-hidden relative group"
+                >
+                  {/* Layered images for that "repeated" look */}
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.8 }}
+                    src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                    alt="Artistic visual"
+                    className="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  <img
+                    src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                    alt="Artistic visual"
+                    className="absolute inset-0 w-full h-full object-cover grayscale opacity-20 mix-blend-screen translate-x-2 translate-y-2 pointer-events-none"
+                    referrerPolicy="no-referrer"
+                  />
+                  <img
+                    src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
+                    alt="Artistic visual"
+                    className="absolute inset-0 w-full h-full object-cover grayscale opacity-10 mix-blend-screen -translate-x-2 -translate-y-2 pointer-events-none"
+                    referrerPolicy="no-referrer"
+                  />
+
+                  {/* Overlay for that "distorted" feel from the image */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent pointer-events-none" />
+
+                  {/* Social Icon */}
+                  <div className="absolute bottom-6 right-6">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+                    >
+                      <Twitter size={18} />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
+            </section>
+          </div>
+
+          {/* Scroll Section 2: Portfolio */}
+          <div className="scroll-section">
+            <section className="p-6 md:p-12 pt-4 pb-24 relative overflow-hidden h-full flex flex-col justify-center">
               <motion.div
-                initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
-                animate={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
-                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                className="w-[90%] h-[90%] bg-[#1a1a1a] rounded-2xl overflow-hidden relative group"
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col items-start"
               >
-                {/* Layered images for that "repeated" look */}
+                <div className="relative w-full">
+                  <motion.h2
+                    initial={{ opacity: 0, y: 100 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-[15vw] md:text-[20vw] font-bold leading-[0.8] tracking-tighter flex items-baseline relative"
+                  >
+                    Portfolio
+                    <motion.span
+                      animate={{
+                        opacity: [0, 1, 0, 1, 0],
+                        x: [0, 5, -5, 5, 0],
+                      }}
+                      transition={{
+                        duration: 0.2,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                        ease: "linear"
+                      }}
+                      className="absolute inset-0 text-white/20 pointer-events-none"
+                    >
+                      Portfolio
+                    </motion.span>
+                    <span className="text-[4vw] md:text-[5vw] font-medium ml-2">™</span>
+                  </motion.h2>
+
+                  {/* Use for Free Button */}
+                  <div className="absolute bottom-[10%] right-0 md:right-12">
+                    <motion.button
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileTap={{ scale: 0.95 }}
+                      onMouseMove={(e) => {
+                        const { clientX, clientY, currentTarget } = e;
+                        const { left, top, width, height } = currentTarget.getBoundingClientRect();
+                        const x = (clientX - (left + width / 2)) * 0.2;
+                        const y = (clientY - (top + height / 2)) * 0.2;
+                        currentTarget.style.transform = `translate(${x}px, ${y}px)`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = `translate(0px, 0px)`;
+                      }}
+                      className="bg-white text-black px-6 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm md:text-base shadow-2xl transition-transform duration-200 ease-out"
+                    >
+                      <ArrowDownToLine size={20} />
+                      Use for Free
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            </section>
+          </div>
+
+          {/* Scroll Section 3: Experience */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-6 md:p-12 py-24 border-t border-white/10">
+              <motion.div
+                initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                className="aspect-[3/4] rounded-3xl overflow-hidden bg-[#1a1a1a]"
+              >
                 <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.8 }}
-                  src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
-                  alt="Artistic visual"
-                  className="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-700"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 1.2 }}
+                  src="https://picsum.photos/seed/portrait-1/1200/1600"
+                  alt="Portrait"
+                  className="w-full h-full object-cover grayscale"
                   referrerPolicy="no-referrer"
                 />
-                <img
-                  src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
-                  alt="Artistic visual"
-                  className="absolute inset-0 w-full h-full object-cover grayscale opacity-20 mix-blend-screen translate-x-2 translate-y-2 pointer-events-none"
-                  referrerPolicy="no-referrer"
-                />
-                <img
-                  src="https://picsum.photos/seed/tokyo-art-1/1200/1600"
-                  alt="Artistic visual"
-                  className="absolute inset-0 w-full h-full object-cover grayscale opacity-10 mix-blend-screen -translate-x-2 -translate-y-2 pointer-events-none"
-                  referrerPolicy="no-referrer"
-                />
+              </motion.div>
 
-                {/* Overlay for that "distorted" feel from the image */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent pointer-events-none" />
+              <div className="flex flex-col justify-center items-start">
+                <motion.h3
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-12"
+                >
+                  13+ years™ of digital form, sharp interactions, and relentless creative discipline and effort.
+                </motion.h3>
 
-                {/* Social Icon */}
-                <div className="absolute bottom-6 right-6">
+                <div className="flex items-center justify-between w-full">
+                  <motion.button
+                    whileHover={{ scale: 1.05, backgroundColor: "white", color: "black" }}
+                    className="border-2 border-white px-10 py-4 rounded-full font-bold text-lg uppercase tracking-widest transition-colors"
+                  >
+                    Contact
+                  </motion.button>
+
                   <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileHover={{ scale: 1.1, rotate: -5 }}
                     className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
                   >
                     <Twitter size={18} />
                   </motion.div>
                 </div>
-              </motion.div>
-            </div>
-          </section>
-
-          {/* Massive Portfolio Section */}
-          <section className="p-6 md:p-12 pt-4 pb-24 relative overflow-hidden">
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-start"
-            >
-              <div className="relative w-full">
-                <motion.h2
-                  initial={{ opacity: 0, y: 100 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[15vw] md:text-[20vw] font-bold leading-[0.8] tracking-tighter flex items-baseline relative"
-                >
-                  Portfolio
-                  <motion.span
-                    animate={{
-                      opacity: [0, 1, 0, 1, 0],
-                      x: [0, 5, -5, 5, 0],
-                    }}
-                    transition={{
-                      duration: 0.2,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                      ease: "linear"
-                    }}
-                    className="absolute inset-0 text-white/20 pointer-events-none"
-                  >
-                    Portfolio
-                  </motion.span>
-                  <span className="text-[4vw] md:text-[5vw] font-medium ml-2">™</span>
-                </motion.h2>
-
-                {/* Use for Free Button */}
-                <div className="absolute bottom-[10%] right-0 md:right-12">
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    onMouseMove={(e) => {
-                      const { clientX, clientY, currentTarget } = e;
-                      const { left, top, width, height } = currentTarget.getBoundingClientRect();
-                      const x = (clientX - (left + width / 2)) * 0.2;
-                      const y = (clientY - (top + height / 2)) * 0.2;
-                      currentTarget.style.transform = `translate(${x}px, ${y}px)`;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = `translate(0px, 0px)`;
-                    }}
-                    className="bg-white text-black px-6 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm md:text-base shadow-2xl transition-transform duration-200 ease-out"
-                  >
-                    <ArrowDownToLine size={20} />
-                    Use for Free
-                  </motion.button>
-                </div>
               </div>
-            </motion.div>
-          </section>
-
-          {/* Experience Section */}
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-6 md:p-12 py-24 border-t border-white/10">
-            <motion.div
-              initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
-              whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-              className="aspect-[3/4] rounded-3xl overflow-hidden bg-[#1a1a1a]"
-            >
-              <motion.img
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 1.2 }}
-                src="https://picsum.photos/seed/portrait-1/1200/1600"
-                alt="Portrait"
-                className="w-full h-full object-cover grayscale"
-                referrerPolicy="no-referrer"
-              />
-            </motion.div>
-
-            <div className="flex flex-col justify-center items-start">
-              <motion.h3
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-4xl md:text-6xl font-bold leading-tight tracking-tight mb-12"
-              >
-                13+ years™ of digital form, sharp interactions, and relentless creative discipline and effort.
-              </motion.h3>
-
-              <div className="flex items-center justify-between w-full">
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: "white", color: "black" }}
-                  className="border-2 border-white px-10 py-4 rounded-full font-bold text-lg uppercase tracking-widest transition-colors"
-                >
-                  Contact
-                </motion.button>
-
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: -5 }}
-                  className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
-                >
-                  <Twitter size={18} />
-                </motion.div>
-              </div>
-            </div>
-          </section>
-
-          {/* Second Ticker */}
-          <div className="w-full bg-white py-4 overflow-hidden border-y border-white/10">
-            <div className="flex whitespace-nowrap animate-marquee">
-              {[...Array(10)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="flex items-center text-black font-bold uppercase tracking-tighter text-sm md:text-base"
-                >
-                  <span className="mx-8">Digital Nomad</span>
-                  <div className="w-2 h-2 bg-black rounded-full" />
-                  <span className="mx-8">Creative Developer</span>
-                  <div className="w-2 h-2 bg-black rounded-full" />
-                  <span className="mx-8">Art Director</span>
-                  <div className="w-2 h-2 bg-black rounded-full" />
-                </motion.div>
-              ))}
-            </div>
+            </section>
           </div>
 
-          {/* Logo Grid Section */}
-          <section className="p-6 md:p-12 py-24 bg-black relative">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { name: "Cairo", logo: "Cairo" },
-                { name: "oslo.", logo: "oslo." },
-                { name: "Chain", logo: "Chain" },
-                { name: "Studio", logo: "Studio" }
-              ].map((brand, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="aspect-square border border-white/10 rounded-2xl flex items-center justify-center group hover:bg-white/5 transition-colors"
-                >
-                  <span className="text-2xl md:text-4xl font-bold tracking-tighter opacity-50 group-hover:opacity-100 transition-opacity">
-                    {brand.logo}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Floating Use for Free Button (Repeated as per image) */}
-            <div className="absolute bottom-12 right-12 hidden md:block">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onMouseMove={(e) => {
-                  const { clientX, clientY, currentTarget } = e;
-                  const { left, top, width, height } = currentTarget.getBoundingClientRect();
-                  const x = (clientX - (left + width / 2)) * 0.2;
-                  const y = (clientY - (top + height / 2)) * 0.2;
-                  currentTarget.style.transform = `translate(${x}px, ${y}px)`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = `translate(0px, 0px)`;
-                }}
-                className="bg-white text-black px-6 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm md:text-base shadow-2xl transition-transform duration-200 ease-out"
-              >
-                <ArrowDownToLine size={20} />
-                Use for Free
-              </motion.button>
-            </div>
-          </section>
-
-          {/* Services Section */}
-          <section className="bg-black py-24">
-            <div className="px-6 md:px-12 mb-12">
-              <motion.h2
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[15vw] md:text-[12vw] font-bold leading-[0.8] tracking-tighter flex items-start"
-              >
-                Services<span className="text-[4vw] md:text-[3vw] font-medium mt-4 ml-4 opacity-60">(6)</span>
-              </motion.h2>
-            </div>
-
-            {/* Services Ticker */}
-            <div className="w-full bg-white py-3 overflow-hidden border-y border-white/10 mb-24">
+          {/* Scroll Section 4: Ticker & Logo Grid */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center py-24">
+            {/* Second Ticker */}
+            <div className="w-full bg-white py-4 overflow-hidden border-y border-white/10">
               <div className="flex whitespace-nowrap animate-marquee">
                 {[...Array(10)].map((_, i) => (
-                  <div key={i} className="flex items-center text-black font-medium uppercase tracking-widest text-[10px] md:text-xs">
-                    <span className="mx-12">Precise</span>
-                    <span className="mx-12">Structured</span>
-                    <span className="mx-12">Focused</span>
-                    <span className="mx-12">Visual Language</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Services List */}
-            <div className="px-6 md:px-12 max-w-7xl ml-auto">
-              <motion.div
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.15,
-                      delayChildren: 0.2
-                    }
-                  }
-                }}
-                className="flex flex-col"
-              >
-                {[
-                  {
-                    id: "01",
-                    title: "Art Direction",
-                    desc: "We guide every visual decision from start to finish, ensuring clarity, emotion, and impact across every touchpoint."
-                  },
-                  {
-                    id: "02",
-                    title: "Brand Identity",
-                    desc: "From strategy to execution, we shape consistent brand systems that speak clearly and feel uniquely ownable."
-                  },
-                  {
-                    id: "03",
-                    title: "Motion Direction",
-                    desc: "We use motion as a design tool — adding clarity, rhythm, and energy to digital experiences with intention."
-                  },
-                  {
-                    id: "04",
-                    title: "Framer Sites",
-                    desc: "Design meets execution with real-time, scalable websites — all crafted natively inside Framer for speed and precision."
-                  },
-                  {
-                    id: "05",
-                    title: "UI/UX Design",
-                    desc: "Crafting intuitive digital interfaces that prioritize user experience while maintaining aesthetic excellence."
-                  },
-                  {
-                    id: "06",
-                    title: "Creative Strategy",
-                    desc: "Bridging the gap between business goals and creative execution through rigorous research and insight."
-                  }
-                ].map((service) => (
                   <motion.div
-                    key={service.id}
-                    variants={{
-                      hidden: { opacity: 0, x: -50 },
-                      show: {
-                        opacity: 1,
-                        x: 0,
-                        transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
-                      }
-                    }}
-                    className="group border-b border-white/10 py-12 flex flex-col md:flex-row items-start md:items-center gap-8 hover:bg-white/5 transition-colors px-4 -mx-4 rounded-lg overflow-hidden relative"
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.05 }}
+                    className="flex items-center text-black font-bold uppercase tracking-tighter text-sm md:text-base"
                   >
-                    <motion.div
-                      className="absolute inset-0 bg-white/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700 ease-[0.16,1,0.3,1]"
-                    />
-                    <span className="text-sm font-bold opacity-40 group-hover:opacity-100 transition-opacity relative z-10">{service.id}</span>
-                    <div className="flex-1 relative z-10">
-                      <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 group-hover:translate-x-4 transition-transform duration-500">
-                        {service.title}
-                      </h3>
-                    </div>
-                    <div className="md:w-1/3 relative z-10">
-                      <p className="text-sm md:text-base text-white/60 leading-relaxed group-hover:text-white transition-colors duration-500">
-                        {service.desc}
-                      </p>
-                    </div>
+                    <span className="mx-8">Digital Nomad</span>
+                    <div className="w-2 h-2 bg-black rounded-full" />
+                    <span className="mx-8">Creative Developer</span>
+                    <div className="w-2 h-2 bg-black rounded-full" />
+                    <span className="mx-8">Art Director</span>
+                    <div className="w-2 h-2 bg-black rounded-full" />
                   </motion.div>
                 ))}
-              </motion.div>
-            </div>
-          </section>
-
-          {/* Selected Works Gallery (4 Images) */}
-          <section className="bg-black py-24 border-t border-white/10">
-            <div className="px-6 md:px-12 mb-16">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="flex flex-col md:flex-row justify-between items-end gap-8"
-              >
-                <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
-                  Selected<br />Works<span className="text-2xl md:text-4xl opacity-30 ml-4">(4)</span>
-                </h2>
-                <p className="text-white/40 max-w-xs text-sm uppercase tracking-widest leading-relaxed">
-                  A curated archive of visual explorations, digital products, and artistic directions from the past decade.
-                </p>
-              </motion.div>
+              </div>
             </div>
 
-            <div className="px-6 md:px-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <GalleryItem key={i} index={i} />
+            {/* Logo Grid Section */}
+            <section className="p-6 md:p-12 py-24 bg-black relative">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { name: "Cairo", logo: "Cairo" },
+                  { name: "oslo.", logo: "oslo." },
+                  { name: "Chain", logo: "Chain" },
+                  { name: "Studio", logo: "Studio" }
+                ].map((brand, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="aspect-square border border-white/10 rounded-2xl flex items-center justify-center group hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-2xl md:text-4xl font-bold tracking-tighter opacity-50 group-hover:opacity-100 transition-opacity">
+                      {brand.logo}
+                    </span>
+                  </motion.div>
                 ))}
               </div>
-            </div>
-          </section>
 
-          {/* What I Do Section */}
-          <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-4">
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
+              {/* Floating Use for Free Button (Repeated as per image) */}
+              <div className="absolute bottom-12 right-12 hidden md:block">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onMouseMove={(e) => {
+                    const { clientX, clientY, currentTarget } = e;
+                    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+                    const x = (clientX - (left + width / 2)) * 0.2;
+                    const y = (clientY - (top + height / 2)) * 0.2;
+                    currentTarget.style.transform = `translate(${x}px, ${y}px)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = `translate(0px, 0px)`;
+                  }}
+                  className="bg-white text-black px-6 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm md:text-base shadow-2xl transition-transform duration-200 ease-out"
                 >
-                  What i do
-                </motion.span>
+                  <ArrowDownToLine size={20} />
+                  Use for Free
+                </motion.button>
               </div>
-              <div className="lg:col-span-8">
+            </section>
+          </div>
+
+          {/* Scroll Section 5: Services */}
+          <div className="scroll-section">
+            <section className="bg-black py-24 min-h-screen flex flex-col justify-center">
+              <div className="px-6 md:px-12 mb-12">
+                <motion.h2
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-[15vw] md:text-[12vw] font-bold leading-[0.8] tracking-tighter flex items-start"
+                >
+                  Services<span className="text-[4vw] md:text-[3vw] font-medium mt-4 ml-4 opacity-60">(6)</span>
+                </motion.h2>
+              </div>
+
+              {/* Services Ticker */}
+              <div className="w-full bg-white py-3 overflow-hidden border-y border-white/10 mb-24">
+                <div className="flex whitespace-nowrap animate-marquee">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="flex items-center text-black font-medium uppercase tracking-widest text-[10px] md:text-xs">
+                      <span className="mx-12">Precise</span>
+                      <span className="mx-12">Structured</span>
+                      <span className="mx-12">Focused</span>
+                      <span className="mx-12">Visual Language</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Services List */}
+              <div className="px-6 md:px-12 max-w-7xl ml-auto">
                 <motion.div
                   initial="hidden"
                   whileInView="show"
@@ -1347,303 +1255,437 @@ export default function App() {
                     hidden: { opacity: 0 },
                     show: {
                       opacity: 1,
-                      transition: { staggerChildren: 0.1 }
-                    }
-                  }}
-                  className="flex flex-col gap-2"
-                >
-                  {[
-                    "WEBSITE DESIGN",
-                    "FRAMER DEVELOPMENT",
-                    "BRANDING",
-                    "UX / UI DESIGN",
-                    "BRAND STRATEGY",
-                    "ART DIRECTION",
-                    "DESIGN SYSTEM"
-                  ].map((item, i) => (
-                    <motion.div
-                      key={i}
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-                      }}
-                      className="group flex items-center justify-between border-b border-white/5 py-4 cursor-default"
-                    >
-                      <h3 className={`text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter transition-all duration-500 ${i % 2 !== 0 ? 'opacity-40 group-hover:opacity-100' : 'opacity-100'}`}>
-                        {item}
-                      </h3>
-                      <div className="w-0 h-[2px] bg-white group-hover:w-12 transition-all duration-500" />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-            </div>
-          </section>
-
-          {/* Work Experience Section */}
-          <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-4">
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
-                >
-                  Work experience
-                </motion.span>
-              </div>
-              <div className="lg:col-span-8">
-                <motion.div
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true }}
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.1 }
+                      transition: {
+                        staggerChildren: 0.15,
+                        delayChildren: 0.2
+                      }
                     }
                   }}
                   className="flex flex-col"
                 >
                   {[
-                    { role: "Art direction", company: "Google", years: "2025 - Now" },
-                    { role: "Art director", company: "Owl studio", years: "2023 - 2025" },
-                    { role: "Senior Designer", company: "Microsoft", years: "2022 - 2023" },
-                    { role: "Senior Designer", company: "Meta", years: "2021 - 2022" }
-                  ].map((exp, i) => (
+                    {
+                      id: "01",
+                      title: "Art Direction",
+                      desc: "We guide every visual decision from start to finish, ensuring clarity, emotion, and impact across every touchpoint."
+                    },
+                    {
+                      id: "02",
+                      title: "Brand Identity",
+                      desc: "From strategy to execution, we shape consistent brand systems that speak clearly and feel uniquely ownable."
+                    },
+                    {
+                      id: "03",
+                      title: "Motion Direction",
+                      desc: "We use motion as a design tool — adding clarity, rhythm, and energy to digital experiences with intention."
+                    },
+                    {
+                      id: "04",
+                      title: "Framer Sites",
+                      desc: "Design meets execution with real-time, scalable websites — all crafted natively inside Framer for speed and precision."
+                    },
+                    {
+                      id: "05",
+                      title: "UI/UX Design",
+                      desc: "Crafting intuitive digital interfaces that prioritize user experience while maintaining aesthetic excellence."
+                    },
+                    {
+                      id: "06",
+                      title: "Creative Strategy",
+                      desc: "Bridging the gap between business goals and creative execution through rigorous research and insight."
+                    }
+                  ].map((service) => (
                     <motion.div
-                      key={i}
+                      key={service.id}
                       variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+                        hidden: { opacity: 0, x: -50 },
+                        show: {
+                          opacity: 1,
+                          x: 0,
+                          transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+                        }
                       }}
-                      className="grid grid-cols-3 py-6 border-b border-white/5 text-xs md:text-sm group hover:bg-white/5 px-4 -mx-4 rounded-lg transition-colors"
+                      className="group border-b border-white/10 py-12 flex flex-col md:flex-row items-start md:items-center gap-8 hover:bg-white/5 transition-colors px-4 -mx-4 rounded-lg overflow-hidden relative"
                     >
-                      <span className="font-medium opacity-60 group-hover:opacity-100">{exp.role}</span>
-                      <span className="font-bold text-center">{exp.company}</span>
-                      <span className="text-right opacity-60 group-hover:opacity-100">{exp.years}</span>
+                      <motion.div
+                        className="absolute inset-0 bg-white/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-700 ease-[0.16,1,0.3,1]"
+                      />
+                      <span className="text-sm font-bold opacity-40 group-hover:opacity-100 transition-opacity relative z-10">{service.id}</span>
+                      <div className="flex-1 relative z-10">
+                        <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 group-hover:translate-x-4 transition-transform duration-500">
+                          {service.title}
+                        </h3>
+                      </div>
+                      <div className="md:w-1/3 relative z-10">
+                        <p className="text-sm md:text-base text-white/60 leading-relaxed group-hover:text-white transition-colors duration-500">
+                          {service.desc}
+                        </p>
+                      </div>
                     </motion.div>
                   ))}
                 </motion.div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
-          {/* Awards Section */}
-          <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              <div className="lg:col-span-4">
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
-                >
-                  Awards
-                </motion.span>
-              </div>
-              <div className="lg:col-span-8">
+          {/* Scroll Section 6: Selected Works Gallery */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="bg-black py-24 border-t border-white/10 flex flex-col justify-center">
+              <div className="px-6 md:px-12 mb-16">
                 <motion.div
-                  initial="hidden"
-                  whileInView="show"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  variants={{
-                    hidden: { opacity: 0 },
-                    show: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.1 }
-                    }
-                  }}
-                  className="flex flex-col"
+                  className="flex flex-col md:flex-row justify-between items-end gap-8"
                 >
-                  {[
-                    { name: "Vanguard", org: "Awwwards (SOTD)", year: "2025" },
-                    { name: "Apex", org: "FWA ( SOTD )", year: "2024" },
-                    { name: "Fabric", org: "Awwwards (SOTD)", year: "2025" },
-                    { name: "Olive", org: "CSSDA (WOTD)", year: "2024" }
-                  ].map((award, i) => (
-                    <motion.div
-                      key={i}
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-                      }}
-                      className="grid grid-cols-3 py-6 border-b border-white/5 text-xs md:text-sm group hover:bg-white/5 px-4 -mx-4 rounded-lg transition-colors"
-                    >
-                      <span className="font-medium opacity-60 group-hover:opacity-100">{award.name}</span>
-                      <span className="font-bold text-center">{award.org}</span>
-                      <span className="text-right opacity-60 group-hover:opacity-100">{award.year}</span>
-                    </motion.div>
-                  ))}
+                  <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
+                    Selected<br />Works<span className="text-2xl md:text-4xl opacity-30 ml-4">(4)</span>
+                  </h2>
+                  <p className="text-white/40 max-w-xs text-sm uppercase tracking-widest leading-relaxed">
+                    A curated archive of visual explorations, digital products, and artistic directions from the past decade.
+                  </p>
                 </motion.div>
               </div>
-            </div>
-          </section>
 
-          {/* Blending Design and Code Section */}
-          <section className="p-6 md:p-12 py-40 bg-[#050505] border-t border-white/5 relative overflow-hidden">
-            <div className="max-w-7xl mx-auto">
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.04,
-                      delayChildren: 0.3
-                    }
-                  }
-                }}
-                className="mb-24"
-              >
-                <AnimatedHeadline />
-              </motion.div>
+              <div className="px-6 md:px-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(4)].map((_, i) => (
+                    <GalleryItem key={i} index={i} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+          {/* Scroll Section 7: What I Do */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black flex flex-col justify-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 <div className="lg:col-span-4">
-                  <motion.div
-                    initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
-                    whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a]"
+                    className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
                   >
-                    <img
-                      src="https://picsum.photos/seed/fashion-1/800/1200"
-                      alt="Creative Portrait"
-                      className="w-full h-full object-cover grayscale"
-                      referrerPolicy="no-referrer"
-                    />
+                    What i do
+                  </motion.span>
+                </div>
+                <div className="lg:col-span-8">
+                  <motion.div
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                      }
+                    }}
+                    className="flex flex-col gap-2"
+                  >
+                    {[
+                      "WEBSITE DESIGN",
+                      "FRAMER DEVELOPMENT",
+                      "BRANDING",
+                      "UX / UI DESIGN",
+                      "BRAND STRATEGY",
+                      "ART DIRECTION",
+                      "DESIGN SYSTEM"
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        variants={{
+                          hidden: { opacity: 0, x: -20 },
+                          show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+                        }}
+                        className="group flex items-center justify-between border-b border-white/5 py-4 cursor-default"
+                      >
+                        <h3 className={`text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter transition-all duration-500 ${i % 2 !== 0 ? 'opacity-40 group-hover:opacity-100' : 'opacity-100'}`}>
+                          {item}
+                        </h3>
+                        <div className="w-0 h-[2px] bg-white group-hover:w-12 transition-all duration-500" />
+                      </motion.div>
+                    ))}
                   </motion.div>
                 </div>
+              </div>
+            </section>
+          </div>
 
-                <div className="lg:col-span-8 flex flex-col md:flex-row gap-12 items-end">
-                  <div className="flex-1">
-                    <motion.p
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
+          {/* Scroll Section 8: Work Experience */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black flex flex-col justify-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="lg:col-span-4">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
+                  >
+                    Work experience
+                  </motion.span>
+                </div>
+                <div className="lg:col-span-8">
+                  <motion.div
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                      }
+                    }}
+                    className="flex flex-col"
+                  >
+                    {[
+                      { role: "Art direction", company: "Google", years: "2025 - Now" },
+                      { role: "Art director", company: "Owl studio", years: "2023 - 2025" },
+                      { role: "Senior Designer", company: "Microsoft", years: "2022 - 2023" },
+                      { role: "Senior Designer", company: "Meta", years: "2021 - 2022" }
+                    ].map((exp, i) => (
+                      <motion.div
+                        key={i}
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+                        }}
+                        className="grid grid-cols-3 py-6 border-b border-white/5 text-xs md:text-sm group hover:bg-white/5 px-4 -mx-4 rounded-lg transition-colors"
+                      >
+                        <span className="font-medium opacity-60 group-hover:opacity-100">{exp.role}</span>
+                        <span className="font-bold text-center">{exp.company}</span>
+                        <span className="text-right opacity-60 group-hover:opacity-100">{exp.years}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Scroll Section 9: Awards */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="p-6 md:p-12 py-24 border-t border-white/10 bg-black flex flex-col justify-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="lg:col-span-4">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-40"
+                  >
+                    Awards
+                  </motion.span>
+                </div>
+                <div className="lg:col-span-8">
+                  <motion.div
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                      }
+                    }}
+                    className="flex flex-col"
+                  >
+                    {[
+                      { name: "Vanguard", org: "Awwwards (SOTD)", year: "2025" },
+                      { name: "Apex", org: "FWA ( SOTD )", year: "2024" },
+                      { name: "Fabric", org: "Awwwards (SOTD)", year: "2025" },
+                      { name: "Olive", org: "CSSDA (WOTD)", year: "2024" }
+                    ].map((award, i) => (
+                      <motion.div
+                        key={i}
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+                        }}
+                        className="grid grid-cols-3 py-6 border-b border-white/5 text-xs md:text-sm group hover:bg-white/5 px-4 -mx-4 rounded-lg transition-colors"
+                      >
+                        <span className="font-medium opacity-60 group-hover:opacity-100">{award.name}</span>
+                        <span className="font-bold text-center">{award.org}</span>
+                        <span className="text-right opacity-60 group-hover:opacity-100">{award.year}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Scroll Section 10: Blending Design and Code */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="p-6 md:p-12 py-40 bg-[#050505] border-t border-white/5 relative overflow-hidden flex flex-col justify-center">
+              <div className="max-w-7xl mx-auto">
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-100px" }}
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.04,
+                        delayChildren: 0.3
+                      }
+                    }
+                  }}
+                  className="mb-24"
+                >
+                  <AnimatedHeadline />
+                </motion.div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+                  <div className="lg:col-span-4">
+                    <motion.div
+                      initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
+                      whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
                       viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                      className="text-lg md:text-xl text-white/60 leading-relaxed mb-8"
+                      transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a]"
                     >
-                      We bridge creative direction with real-world execution, combining design and development into one <span className="text-white font-bold">seamless workflow</span> to deliver digital experiences that are thoughtful, fast, and built to perform.
-                    </motion.p>
-
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="border-2 border-white px-10 py-3 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all"
-                    >
-                      See Works
-                    </motion.button>
+                      <img
+                        src="https://picsum.photos/seed/fashion-1/800/1200"
+                        alt="Creative Portrait"
+                        className="w-full h-full object-cover grayscale"
+                        referrerPolicy="no-referrer"
+                      />
+                    </motion.div>
                   </div>
 
-                  <motion.div
-                    initial={{ opacity: 0, clipPath: "inset(0 0 0 100%)" }}
-                    whileInView={{ opacity: 1, clipPath: "inset(0 0 0 0%)" }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                    className="w-full md:w-1/2 aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a]"
-                  >
-                    <img
-                      src="https://picsum.photos/seed/eyes-1/1200/800"
-                      alt="Creative Detail"
-                      className="w-full h-full object-cover grayscale"
-                      referrerPolicy="no-referrer"
-                    />
-                  </motion.div>
+                  <div className="lg:col-span-8 flex flex-col md:flex-row gap-12 items-end">
+                    <div className="flex-1">
+                      <motion.p
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                        className="text-lg md:text-xl text-white/60 leading-relaxed mb-8"
+                      >
+                        We bridge creative direction with real-world execution, combining design and development into one <span className="text-white font-bold">seamless workflow</span> to deliver digital experiences that are thoughtful, fast, and built to perform.
+                      </motion.p>
+
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="border-2 border-white px-10 py-3 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all"
+                      >
+                        See Works
+                      </motion.button>
+                    </div>
+
+                    <motion.div
+                      initial={{ opacity: 0, clipPath: "inset(0 0 0 100%)" }}
+                      whileInView={{ opacity: 1, clipPath: "inset(0 0 0 0%)" }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                      className="w-full md:w-1/2 aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a]"
+                    >
+                      <img
+                        src="https://picsum.photos/seed/eyes-1/1200/800"
+                        alt="Creative Detail"
+                        className="w-full h-full object-cover grayscale"
+                        referrerPolicy="no-referrer"
+                      />
+                    </motion.div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Subtle Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none glow-effect" />
-          </section>
+              {/* Subtle Background Glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none glow-effect" />
+            </section>
+          </div>
 
-          {/* Floating Cards Section */}
-          <section className="bg-black py-24 border-t border-white/10 relative overflow-hidden min-h-[800px] flex flex-col">
-            <div className="px-6 md:px-12 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] font-bold opacity-40 mb-12">
-              <span>© BRAND PARTNERS パートナー</span>
-              <span>(WDX® — 08)</span>
-              <span className="hidden md:block">CREATIVE DIRECTION</span>
-            </div>
+          {/* Scroll Section 11: Floating Cards */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="bg-black py-24 border-t border-white/10 relative overflow-hidden flex flex-col">
+              <div className="px-6 md:px-12 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] font-bold opacity-40 mb-12">
+                <span>© BRAND PARTNERS パートナー</span>
+                <span>(WDX® — 08)</span>
+                <span className="hidden md:block">CREATIVE DIRECTION</span>
+              </div>
 
-            <div className="flex-1 relative">
-              {[
-                { id: 1, img: "car-1", label: "", x: "20%", y: "10%", w: "300px", h: "150px", speed: 40 },
-                { id: 2, img: "manila-1", label: "Manila.", x: "70%", y: "5%", w: "250px", h: "350px", speed: -60 },
-                { id: 3, img: "sofa-1", label: "", x: "75%", y: "55%", w: "200px", h: "250px", speed: 30 },
-                { id: 4, img: "sunset-1", label: ".olzo", x: "60%", y: "70%", w: "280px", h: "200px", speed: -40 },
-                { id: 5, img: "house-1", label: ".olzo", x: "35%", y: "80%", w: "320px", h: "180px", speed: 50 },
-                { id: 6, img: "typewriter-1", label: "Analog", x: "10%", y: "40%", w: "220px", h: "280px", speed: -30 },
-                { id: 7, img: "mountain-1", label: "Peak", x: "45%", y: "15%", w: "180px", h: "240px", speed: 20 },
-                { id: 8, img: "ocean-1", label: "Deep", x: "85%", y: "30%", w: "240px", h: "180px", speed: -50 },
-                { id: 9, img: "forest-1", label: "Wild", x: "5%", y: "75%", w: "260px", h: "200px", speed: 60 },
-                { id: 10, img: "city-1", label: "Grid", x: "50%", y: "50%", w: "200px", h: "200px", speed: -25 },
-                { id: 11, img: "abstract-1", label: "Form", x: "30%", y: "5%", w: "150px", h: "150px", speed: 45 },
-                { id: 12, img: "portrait-2", label: "Soul", x: "80%", y: "80%", w: "180px", h: "260px", speed: -35 },
-                { id: 13, img: "architecture-1", label: "Structure", x: "15%", y: "60%", w: "280px", h: "160px", speed: 15 },
-                { id: 14, img: "minimal-1", label: "Less", x: "55%", y: "85%", w: "200px", h: "120px", speed: -45 },
-                { id: 15, img: "tech-1", label: "Future", x: "90%", y: "10%", w: "120px", h: "180px", speed: 55 },
-              ].map((card) => (
-                <Card
-                  key={card.id}
-                  {...card}
-                  smoothX={smoothX}
-                  smoothY={smoothY}
-                />
-              ))}
-            </div>
-          </section>
+              <div className="flex-1 relative">
+                {[
+                  { id: 1, img: "car-1", label: "", x: "20%", y: "10%", w: "300px", h: "150px", speed: 40 },
+                  { id: 2, img: "manila-1", label: "Manila.", x: "70%", y: "5%", w: "250px", h: "350px", speed: -60 },
+                  { id: 3, img: "sofa-1", label: "", x: "75%", y: "55%", w: "200px", h: "250px", speed: 30 },
+                  { id: 4, img: "sunset-1", label: ".olzo", x: "60%", y: "70%", w: "280px", h: "200px", speed: -40 },
+                  { id: 5, img: "house-1", label: ".olzo", x: "35%", y: "80%", w: "320px", h: "180px", speed: 50 },
+                  { id: 6, img: "typewriter-1", label: "Analog", x: "10%", y: "40%", w: "220px", h: "280px", speed: -30 },
+                  { id: 7, img: "mountain-1", label: "Peak", x: "45%", y: "15%", w: "180px", h: "240px", speed: 20 },
+                  { id: 8, img: "ocean-1", label: "Deep", x: "85%", y: "30%", w: "240px", h: "180px", speed: -50 },
+                  { id: 9, img: "forest-1", label: "Wild", x: "5%", y: "75%", w: "260px", h: "200px", speed: 60 },
+                  { id: 10, img: "city-1", label: "Grid", x: "50%", y: "50%", w: "200px", h: "200px", speed: -25 },
+                  { id: 11, img: "abstract-1", label: "Form", x: "30%", y: "5%", w: "150px", h: "150px", speed: 45 },
+                  { id: 12, img: "portrait-2", label: "Soul", x: "80%", y: "80%", w: "180px", h: "260px", speed: -35 },
+                  { id: 13, img: "architecture-1", label: "Structure", x: "15%", y: "60%", w: "280px", h: "160px", speed: 15 },
+                  { id: 14, img: "minimal-1", label: "Less", x: "55%", y: "85%", w: "200px", h: "120px", speed: -45 },
+                  { id: 15, img: "tech-1", label: "Future", x: "90%", y: "10%", w: "120px", h: "180px", speed: 55 },
+                ].map((card) => (
+                  <Card
+                    key={card.id}
+                    {...card}
+                    smoothX={smoothX}
+                    smoothY={smoothY}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
 
-          {/* Social Links Bar */}
-          <section className="border-y border-white/10 bg-black">
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.1 }
-                }
-              }}
-              className="grid grid-cols-2 md:grid-cols-5 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
-            >
-              {[
-                { name: "INSTA", link: "#" },
-                { name: "LNKDN", link: "#" },
-                { name: "X", link: "#" },
-                { name: "DRIBBLE", link: "#" },
-                { name: "Bē", link: "#" }
-              ].map((social, i) => (
-                <motion.a
-                  key={i}
-                  href={social.link}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-                  }}
-                  whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
-                  className={`p-6 flex items-center justify-center gap-1 border-white/10 ${i !== 4 ? 'md:border-r' : ''} ${i % 2 === 0 ? 'border-r md:border-r' : ''} transition-colors group`}
-                >
-                  {social.name} <span className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all">↗</span>
-                </motion.a>
-              ))}
-            </motion.div>
-          </section>
+          {/* Scroll Section 12: Social Links Bar */}
+          <div className="scroll-section min-h-screen flex flex-col justify-center">
+            <section className="border-y border-white/10 bg-black">
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.1 }
+                  }
+                }}
+                className="grid grid-cols-2 md:grid-cols-5 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]"
+              >
+                {[
+                  { name: "INSTA", link: "#" },
+                  { name: "LNKDN", link: "#" },
+                  { name: "X", link: "#" },
+                  { name: "DRIBBLE", link: "#" },
+                  { name: "Bē", link: "#" }
+                ].map((social, i) => (
+                  <motion.a
+                    key={i}
+                    href={social.link}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+                    }}
+                    whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+                    className={`p-6 flex items-center justify-center gap-1 border-white/10 ${i !== 4 ? 'md:border-r' : ''} ${i % 2 === 0 ? 'border-r md:border-r' : ''} transition-colors group`}
+                  >
+                    {social.name} <span className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all">↗</span>
+                  </motion.a>
+                ))}
+              </motion.div>
+            </section>
 
-          <FAQSection />
-
-          <ContactSection />
-
-          <StudioFooter />
+            <FAQSection />
+            <ContactSection />
+            <StudioFooter />
+          </div>
         </motion.main>
       </PageTransition>
     </div>

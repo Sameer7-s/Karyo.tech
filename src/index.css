@@ -5,21 +5,26 @@
   --font-display: "Inter", sans-serif;
 }
 
-/* ===== Lenis Smooth Scroll ===== */
+/* ===== Smooth Scroll & Snap Foundation ===== */
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
 html.lenis, html.lenis body {
   height: auto;
+  scroll-snap-type: none; /* Disable native snap when Lenis is active for interstitial smoothness */
 }
 
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
 
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
+.scroll-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  position: relative;
 }
 
 /* ===== Noise Texture — slowed for performance ===== */

@@ -17,6 +17,7 @@ type ParticlesProps = {
     speed?: number;
     particleColor?: string;
     particleDensity?: number;
+    hoverEffect?: boolean;
 };
 export const SparklesCore = (props: ParticlesProps) => {
     const {
@@ -28,6 +29,7 @@ export const SparklesCore = (props: ParticlesProps) => {
         speed,
         particleColor,
         particleDensity,
+        hoverEffect = false,
     } = props;
     const [init, setInit] = useState(false);
     useEffect(() => {
@@ -77,7 +79,7 @@ export const SparklesCore = (props: ParticlesProps) => {
                                     mode: "push",
                                 },
                                 onHover: {
-                                    enable: false,
+                                    enable: hoverEffect,
                                     mode: "repulse",
                                 },
                                 resize: true as any,
