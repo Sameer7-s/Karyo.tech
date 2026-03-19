@@ -29,12 +29,10 @@ const fadeZoomIn = (delay = 0) => ({
   hidden: {
     opacity: 0,
     scale: 1.08,
-    filter: "blur(8px)",
   },
   visible: {
     opacity: 1,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 1, delay, ease: EASE },
   },
 });
@@ -77,25 +75,13 @@ function HeroSection() {
         />
       </div>
 
-      {/* Noise texture */}
-      <div className="absolute inset-0 pointer-events-none z-[1] opacity-[0.035] overflow-hidden">
-        <div className="absolute inset-[-200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat animate-noise gpu-accelerated" />
-      </div>
+
 
       <motion.div
         style={{ y: parallaxY, opacity: opacityFade }}
         className="relative z-10 max-w-[900px] mx-auto px-6 md:px-12 text-center"
       >
-        {/* Label */}
-        <motion.span
-          variants={fadeZoomIn(0)}
-          initial="hidden"
-          animate="visible"
-          className="block text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] mb-10 md:mb-14"
-          style={{ color: COLORS.textDim }}
-        >
-          About Us
-        </motion.span>
+        {/* Label removed */}
 
         {/* Heading */}
         <motion.h1
@@ -176,17 +162,12 @@ function StoryBlock({ text, index }: { text: string; index: number; key?: React.
   });
   const opacity = useTransform(scrollYProgress, [0, 1], [0.08, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [40, 0]);
-  const blur = useTransform(scrollYProgress, [0, 0.5, 1], [6, 2, 0]);
-  const x = useTransform(scrollYProgress, [0, 1], [20, 0]);
-
   return (
     <motion.div
       ref={ref}
       style={{
         opacity,
         y,
-        x,
-        filter: useTransform(blur, (v) => `blur(${v}px)`),
       }}
       className="py-10 md:py-14"
     >

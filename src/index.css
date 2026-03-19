@@ -27,19 +27,6 @@ html.lenis, html.lenis body {
   position: relative;
 }
 
-/* ===== Noise Texture — slowed for performance ===== */
-@keyframes noise {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  25% { transform: translate3d(-5%, -10%, 0); }
-  50% { transform: translate3d(-15%, 5%, 0); }
-  75% { transform: translate3d(7%, -25%, 0); }
-}
-
-.animate-noise {
-  animation: noise 8s steps(4) infinite;
-  will-change: transform;
-  backface-visibility: hidden;
-}
 
 /* ===== Liquid Gradient ===== */
 @keyframes liquid-flow {
@@ -114,7 +101,7 @@ html.lenis, html.lenis body {
 
 /* ===== Reduced Motion — disable heavy animations ===== */
 @media (prefers-reduced-motion: reduce) {
-  .animate-noise,
+
   .animate-marquee,
   .animate-liquid,
   .animate-liquid-fast {
@@ -153,11 +140,6 @@ html.lenis, html.lenis body {
   box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
 }
 
-/* ===== Mobile Performance — reduce heavy effects ===== */
-@media (max-width: 768px) {
-  .animate-noise {
-    animation-duration: 16s;
-  }
 
   .glow-effect, .animate-pulse-glow {
     display: none !important;

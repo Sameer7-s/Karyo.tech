@@ -233,10 +233,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-white selection:text-black">
-      {/* Noise Texture Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[9998] opacity-[0.04] overflow-hidden">
-        <div className="absolute inset-[-200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat animate-noise gpu-accelerated" />
-      </div>
+
 
       {/* Galaxy Background */}
       <GalaxyBackground smoothX={smoothX} smoothY={smoothY} />

@@ -6,7 +6,7 @@ export function CTASection() {
     <section className="w-full bg-black py-32 md:py-44 relative overflow-hidden">
       {/* Subtle white radial glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-white opacity-[0.04] blur-[140px] rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-white opacity-[0.04] rounded-full" />
       </div>
 
       <div className="max-w-[1000px] mx-auto px-6 md:px-12 relative z-10 text-center">

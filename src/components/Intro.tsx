@@ -119,7 +119,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 2.5, delay: 0.8, ease: "easeOut" }}
-                        className="absolute inset-0 -z-10 bg-radial-gradient from-[#4FC3F7]/15 via-transparent to-transparent blur-[80px]"
+                        className="absolute inset-0 -z-10 bg-radial-gradient from-[#4FC3F7]/15 via-transparent to-transparent"
                         style={{ transform: "translateZ(-40px)" }}
                     />
                 </motion.div>

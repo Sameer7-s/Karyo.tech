@@ -28,8 +28,8 @@ export function ContactSection() {
         <section className="relative bg-black py-24 md:py-40 overflow-hidden text-white selection:bg-white selection:text-black" id="contact">
             {/* Background — pure black with a faint white radial */}
             <div className="absolute inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-white opacity-[0.025] blur-[120px] rounded-full translate-x-1/3 -translate-y-1/3" />
-                <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] bg-white opacity-[0.015] blur-[120px] rounded-full -translate-x-1/3 translate-y-1/3" />
+                <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-white opacity-[0.025] rounded-full translate-x-1/3 -translate-y-1/3" />
+                <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] bg-white opacity-[0.015] rounded-full -translate-x-1/3 translate-y-1/3" />
                 {/* Subtle Grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] opacity-40" />
             </div>

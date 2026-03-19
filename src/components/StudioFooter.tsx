@@ -5,9 +5,10 @@ import { motion, useScroll, useTransform } from "motion/react";
 const EASE_PREMIUM: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 /* ── Social SVG icons (outline style) ── */
-const FacebookIcon = () => (
+const WhatsAppIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+    <path fill="currentColor" stroke="none" d="M16.7 13.9c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.2-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.1-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2.1-.3 0-.5-.1-.1-.6-1.5-.9-2.1-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.3s1.1 2.7 1.2 3c.1.2 1.9 2.9 4.6 4.1.6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.2.1-1.3-.1-.1-.3-.2-.6-.3z" />
   </svg>
 );
 const InstagramIcon = () => (
@@ -32,7 +33,7 @@ const XIcon = () => (
 );
 
 const socialIcons = [
-  { icon: <FacebookIcon />, label: "Facebook", href: "#" },
+  { icon: <WhatsAppIcon />, label: "WhatsApp", href: "#" },
   { icon: <InstagramIcon />, label: "Instagram", href: "https://www.instagram.com/karyo.agency/" },
   { icon: <LinkedInIcon />, label: "LinkedIn", href: "https://www.linkedin.com/in/karyo-agency/" },
   { icon: <XIcon />, label: "X", href: "#" },
@@ -147,7 +148,7 @@ export function StudioFooter() {
           </div>
 
           {/* Locations — beside Legal */}
-          <div className="md:col-span-4 lg:col-span-3 md:col-start-8">
+          <div className="md:col-span-4 lg:col-span-3 lg:col-start-8">
             <motion.span
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -183,7 +184,6 @@ export function StudioFooter() {
                   whileHover={{ x: 5 }}
                   className="flex items-center gap-3 text-white/60 hover:text-white transition-colors duration-300 cursor-default group"
                 >
-                  {/* Map-pin icon */}
                   <svg
                     width="16"
                     height="16"
@@ -202,6 +202,55 @@ export function StudioFooter() {
                     {location}
                   </span>
                 </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Navigation — right aligned */}
+          <div className="md:col-span-4 lg:col-span-2 lg:col-start-11">
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+            >
+              Navigation
+            </motion.span>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1, delayChildren: 0.35 },
+                },
+              }}
+              className="flex flex-col gap-6"
+            >
+              {[
+                { name: "Home", href: "/" },
+                { name: "Work", href: "/#work" },
+                { name: "About Us", href: "/about" },
+                { name: "Contact Us", href: "/contact" }
+              ].map((link) => (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    show: {
+                      opacity: 1,
+                      x: 0,
+                      transition: { duration: 0.8, ease: EASE_PREMIUM },
+                    },
+                  }}
+                  whileHover={{ x: 4, color: "white" }}
+                  className="text-sm md:text-base font-medium tracking-wide text-gray-400 hover:text-white transition-all duration-300 ease-out flex w-fit"
+                >
+                  {link.name}
+                </motion.a>
               ))}
             </motion.div>
           </div>
@@ -244,7 +293,7 @@ export function StudioFooter() {
           scale: [1, 1.2, 0.8, 1],
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-white/10 blur-[80px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-white/10 blur-[100px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
       />
       <motion.div
         animate={{
@@ -258,7 +307,7 @@ export function StudioFooter() {
           ease: "easeInOut",
           delay: 2,
         }}
-        className="absolute top-0 left-0 w-[600px] h-[600px] bg-white/5 blur-[80px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
+        className="absolute top-0 left-0 w-[600px] h-[600px] bg-white/5 blur-[100px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
       />
     </footer>
   );

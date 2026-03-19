@@ -50,9 +50,9 @@ export function AIUseCaseShowcase() {
       <div className="min-h-screen bg-[#05070F] text-white overflow-hidden selection:bg-[#3B82F6] selection:text-white relative">
         {/* Background Enhancements */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#3B82F6] opacity-[0.03] blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#6366F1] opacity-[0.03] blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] w-[40%] h-[40%] bg-[#22D3EE] opacity-[0.02] blur-[100px] rounded-full mix-blend-screen" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#3B82F6] opacity-[0.03] rounded-full" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#6366F1] opacity-[0.03] rounded-full" />
+        <div className="absolute top-[40%] left-[50%] translate-x-[-50%] w-[40%] h-[40%] bg-[#22D3EE] opacity-[0.02] rounded-full" />
         
         {/* Subtle Grid */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]" />

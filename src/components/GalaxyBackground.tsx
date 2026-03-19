@@ -230,7 +230,6 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
           maxWidth: "900px",
           maxHeight: "900px",
           background: "radial-gradient(circle, rgba(106, 92, 255, 0.18) 0%, transparent 70%)",
-          filter: "blur(150px)",
           x: nebulaX1,
           y: nebulaY1,
         }}
@@ -256,7 +255,6 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
           maxWidth: "750px",
           maxHeight: "750px",
           background: "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
-          filter: "blur(160px)",
           x: nebulaX2,
           y: nebulaY2,
         }}
@@ -282,7 +280,6 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
           maxWidth: "700px",
           maxHeight: "700px",
           background: "radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, transparent 70%)",
-          filter: "blur(180px)",
           x: nebulaX3,
           y: nebulaY3,
         }}
@@ -305,7 +302,6 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
           height: "50vh",
           maxWidth: "1200px",
           background: "radial-gradient(ellipse, rgba(91, 61, 245, 0.12) 0%, rgba(30, 144, 255, 0.06) 40%, transparent 70%)",
-          filter: "blur(60px)",
         }}
       />
     </div>

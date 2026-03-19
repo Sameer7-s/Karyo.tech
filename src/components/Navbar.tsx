@@ -61,24 +61,28 @@ export function Navbar() {
                     </nav>
                 </div>
 
-                {/* RIGHT — Role / Location */}
-                <div className="flex flex-col items-end text-right hidden sm:flex">
-                    <motion.span
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
-                        className="text-[9px] font-bold tracking-[0.2em] uppercase text-white/40"
+                {/* RIGHT — Magnetic Connect Button */}
+                <div className="flex justify-end hidden sm:flex">
+                    <motion.a
+                        href="#contact"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative group px-6 py-2.5 rounded-full border border-white/20 bg-white/[0.03] overflow-hidden flex items-center justify-center cursor-pointer"
                     >
-                        Karyo
-                    </motion.span>
-                    <motion.span
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.7 }}
-                        className="text-[9px] font-medium tracking-[0.15em] uppercase text-white/30"
-                    >
-                        AI Automation Agency
-                    </motion.span>
+                        {/* Hover fill background */}
+                        <div className="absolute inset-0 bg-white translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1]" />
+                        
+                        {/* Glow effect on hover */}
+                        <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                        {/* Button Text */}
+                        <span className="relative z-10 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white group-hover:text-black transition-colors duration-500">
+                            Connect Us
+                        </span>
+                    </motion.a>
                 </div>
             </div>
         </motion.header>

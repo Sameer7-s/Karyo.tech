@@ -40,12 +40,10 @@ export function BrandPhilosophy() {
     hidden: {
       opacity: 0,
       scale: 1.06,
-      filter: isMobile ? "blur(0px)" : "blur(8px)",
     },
     visible: {
       opacity: 1,
       scale: 1,
-      filter: "blur(0px)",
       transition: { duration: 1.2, ease: EASE },
     },
   };
@@ -69,7 +67,6 @@ export function BrandPhilosophy() {
           borderRadius: "50%",
           background:
             "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 62%)",
-          filter: "blur(90px)",
         }}
         animate={isMobile ? {} : {
           x: ["0px", "120px", "-80px", "60px", "0px"],
