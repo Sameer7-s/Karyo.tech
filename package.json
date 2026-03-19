@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "install:claude": "powershell -Command \"irm https://claude.ai/install.ps1 | iex\""
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -27,6 +28,7 @@
     "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.13.1",
     "tailwind-merge": "^3.5.0",
     "vite": "^6.2.0"
   },

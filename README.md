@@ -10,7 +10,15 @@ View your app in AI Studio: https://ai.studio/apps/0729a59c-1a30-4dc0-a5b7-aeddb
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js
+
+## Recommended Tools
+
+- **Claude for Desktop:** For a better experience, you can install Claude for Desktop.
+  ```powershell
+  irm https://claude.ai/install.ps1 | iex
+  ```
+  Or run: `npm run install:claude`
 
 
 1. Install dependencies:

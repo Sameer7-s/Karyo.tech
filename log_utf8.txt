@@ -1,0 +1,5 @@
+﻿1218ec0 updated files
+be3a844 feat: complete KARYO landing redesign with glassmorphism navbar and enhanced parallax
+4fb2687 perf: Lenis smooth scroll, GPU optimization, footer redesign, selected works & ticker refactor
+fb5db44 feat: Initialize Palmer Portfolio project
+ce992a0 Initial commit
