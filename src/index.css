@@ -13,7 +13,7 @@ html {
 
 html.lenis, html.lenis body {
   height: auto;
-  scroll-snap-type: none; /* Disable native snap when Lenis is active for interstitial smoothness */
+  scroll-snap-type: none;
 }
 
 .lenis.lenis-smooth {
@@ -26,7 +26,6 @@ html.lenis, html.lenis body {
   min-height: 100vh;
   position: relative;
 }
-
 
 /* ===== Liquid Gradient ===== */
 @keyframes liquid-flow {
@@ -74,6 +73,7 @@ html.lenis, html.lenis body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 }
 
@@ -101,7 +101,6 @@ html.lenis, html.lenis body {
 
 /* ===== Reduced Motion — disable heavy animations ===== */
 @media (prefers-reduced-motion: reduce) {
-
   .animate-marquee,
   .animate-liquid,
   .animate-liquid-fast {
@@ -111,6 +110,17 @@ html.lenis, html.lenis body {
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Mobile Performance ===== */
+@media (max-width: 768px) {
+  .animate-marquee {
+    animation-duration: 60s;
+  }
+  .glass-dark {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
   }
 }
 
@@ -140,8 +150,17 @@ html.lenis, html.lenis body {
   box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
 }
 
+.glow-effect, .animate-pulse-glow {
+  display: none !important;
+}
 
-  .glow-effect, .animate-pulse-glow {
-    display: none !important;
-  }
+/* ===== Premium Text Shimmer ===== */
+@keyframes gradient-sweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-gradient-sweep {
+  animation: gradient-sweep 7s linear infinite;
+  will-change: background-position;
 }

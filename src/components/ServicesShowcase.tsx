@@ -38,11 +38,11 @@ export function ServicesShowcase() {
   const active = services[activeIndex];
 
   return (
-    <section className="w-full bg-black py-24 md:py-32 lg:py-40">
-      <div className="max-w-[1300px] mx-auto px-6 md:px-12">
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16 xl:gap-24">
+    <section className="w-full bg-black py-16 md:py-24 lg:py-40">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-12">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 md:gap-12 lg:gap-16 xl:gap-24">
           {/* LEFT — Dynamic Image Card */}
-          <div className="w-full max-w-[380px] lg:max-w-none lg:w-[40%] flex-shrink-0">
+          <div className="w-full lg:max-w-none lg:w-[40%] flex-shrink-0">
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#111]">
               {/* Image with crossfade */}
               <AnimatePresence mode="wait">

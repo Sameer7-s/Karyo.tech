@@ -25,7 +25,7 @@ export function ContactSection() {
     `;
 
     return (
-        <section className="relative bg-black py-24 md:py-40 overflow-hidden text-white selection:bg-white selection:text-black" id="contact">
+        <section className="relative bg-black py-16 sm:py-20 md:py-28 lg:py-40 overflow-hidden text-white selection:bg-white selection:text-black" id="contact">
             {/* Background — pure black with a faint white radial */}
             <div className="absolute inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-white opacity-[0.025] rounded-full translate-x-1/3 -translate-y-1/3" />
@@ -34,9 +34,9 @@ export function ContactSection() {
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] opacity-40" />
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col items-center">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10 flex flex-col items-center">
                 {/* Header */}
-                <div className="w-full text-center md:text-left mb-16 md:mb-24 flex flex-col items-center md:items-start">
+                <div className="w-full text-center md:text-left mb-10 md:mb-16 lg:mb-24 flex flex-col items-center md:items-start">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export function ContactSection() {
                         </div>
 
                         {/* Social & Booking Links */}
-                        <div className="mt-16 pt-12 border-t border-white/8 flex flex-wrap gap-4">
+                        <div className="mt-10 md:mt-16 pt-8 md:pt-12 border-t border-white/8 flex flex-wrap gap-3 md:gap-4">
                             <a href="#" className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300 text-sm font-medium text-white/70 hover:text-white">
                                 <Linkedin className="w-4 h-4" /> LinkedIn
                             </a>
@@ -134,7 +134,7 @@ export function ContactSection() {
                         transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-7"
                     >
-                        <form className="bg-white/[0.02] backdrop-blur-sm border border-white/8 rounded-2xl p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+                        <form className="bg-white/[0.02] backdrop-blur-sm border border-white/8 rounded-2xl p-5 sm:p-6 md:p-8 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {/* Name Input */}
                                 <div className="relative group">

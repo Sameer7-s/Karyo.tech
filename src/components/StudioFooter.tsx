@@ -53,9 +53,9 @@ export function StudioFooter() {
   return (
     <footer
       ref={sectionRef}
-      className="bg-black text-white pt-24 md:pt-32 pb-0 font-sans selection:bg-white selection:text-black border-t border-white/5 relative overflow-hidden"
+      className="bg-black text-white pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-0 font-sans selection:bg-white selection:text-black border-t border-white/5 relative overflow-hidden"
     >
-      <div className="max-w-[1800px] mx-auto relative z-10 px-6 md:px-12 lg:px-20">
+      <div className="max-w-[1800px] mx-auto relative z-10 px-4 sm:px-6 md:px-12 lg:px-20">
 
 
 
@@ -63,7 +63,7 @@ export function StudioFooter() {
         {/* ═══════════════════════════════════════════
             SOCIAL + LEGAL + LOCATIONS GRID
         ═══════════════════════════════════════════ */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 mb-8 md:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 md:gap-16 mb-8 md:mb-12">
           {/* Social — left */}
           <div className="md:col-span-4 lg:col-span-3">
             <motion.span
@@ -262,7 +262,7 @@ export function StudioFooter() {
       {/* ═══════════════════════════════════════════
           BIG LOGO SECTION
       ═══════════════════════════════════════════ */}
-      <div className="max-w-[1800px] mx-auto px-6 md:px-12 lg:px-20 mb-10 w-full relative z-10 overflow-hidden">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 md:px-12 lg:px-20 mb-10 w-full relative z-10 overflow-hidden">
         <h2 className="text-[25vw] md:text-[18vw] font-bold leading-[0.75] tracking-tighter select-none flex justify-center flex-wrap sm:flex-nowrap overflow-hidden">
           {["K", "A", "R", "Y", "O", "®"].map((char, i) => (
             <motion.span
@@ -293,7 +293,7 @@ export function StudioFooter() {
           scale: [1, 1.2, 0.8, 1],
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-white/10 blur-[100px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
+        className="absolute bottom-0 right-0 w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] bg-white/10 blur-[80px] md:blur-[100px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
       />
       <motion.div
         animate={{
@@ -307,7 +307,7 @@ export function StudioFooter() {
           ease: "easeInOut",
           delay: 2,
         }}
-        className="absolute top-0 left-0 w-[600px] h-[600px] bg-white/5 blur-[100px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
+        className="absolute top-0 left-0 w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] bg-white/5 blur-[80px] md:blur-[100px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
       />
     </footer>
   );

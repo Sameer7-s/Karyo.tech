@@ -12,6 +12,7 @@ import { TrustBar } from "./components/TrustBar";
 import { ServicesShowcase } from "./components/ServicesShowcase";
 import { ProcessSection } from "./components/ProcessSection";
 import { WhyChooseUs } from "./components/WhyChooseUs";
+import { Navbar } from "./components/Navbar";
 import { CTASection } from "./components/CTASection";
 
 
@@ -102,9 +103,9 @@ function FAQSection() {
   ];
 
   return (
-    <section className="p-6 md:p-12 py-32 bg-black border-t border-white/[0.06] overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
-        <div className="lg:col-span-5 flex flex-col gap-8 md:gap-12">
+    <section className="p-4 sm:p-6 md:p-12 py-16 sm:py-20 md:py-32 bg-black border-t border-white/[0.06] overflow-hidden">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-20">
+        <div className="lg:col-span-5 flex flex-col gap-6 md:gap-8 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
             whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
@@ -125,7 +126,7 @@ function FAQSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-white"
+            className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-white"
             style={{ fontFamily: "'Syne', sans-serif" }}
           >
             Clarifying Deliverable's Before They Begin with Real Process and Honest <span className="font-serif italic opacity-60">Answers.</span>
@@ -145,11 +146,11 @@ function FAQSection() {
               >
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full py-8 flex items-start gap-8 text-left group relative px-4 -mx-4 rounded-xl transition-all duration-500 hover:bg-white/5"
+                  className="w-full py-5 md:py-8 flex items-start gap-4 md:gap-8 text-left group relative px-3 md:px-4 -mx-3 md:-mx-4 rounded-xl transition-all duration-500 hover:bg-white/5"
                 >
                   <span className="text-[10px] font-bold opacity-40 pt-1.5 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
                   <div className="flex-1 flex justify-between items-center gap-4">
-                    <span className="text-xl md:text-2xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-500">
+                    <span className="text-base sm:text-lg md:text-2xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-500">
                       {faq.question}
                     </span>
                     <motion.div
@@ -173,7 +174,7 @@ function FAQSection() {
                       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="pb-8 pl-12 pr-4 text-white/60 leading-relaxed max-w-xl">
+                      <div className="pb-6 md:pb-8 pl-6 md:pl-12 pr-4 text-sm md:text-base text-white/60 leading-relaxed max-w-xl">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -201,19 +202,7 @@ export default function App() {
     offset: ["start start", "end start"],
   });
 
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-    return () => lenis.destroy();
-  }, []);
+
 
   const springConfig = { damping: 28, stiffness: 150 };
   const smoothX = useSpring(mouseX, springConfig);
@@ -234,6 +223,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-white selection:text-black">
 
+      {/* Navbar — Top-level for correct z-index layering */}
+      <Navbar />
 
       {/* Galaxy Background */}
       <GalaxyBackground smoothX={smoothX} smoothY={smoothY} />
@@ -262,8 +253,8 @@ export default function App() {
           <ServicesShowcase />
 
           {/* ── 5. FEATURED WORK / CASE STUDIES ── */}
-          <section className="bg-black border-t border-white/[0.06] py-24 md:py-32">
-            <div className="px-6 md:px-12 mb-16">
+          <section className="bg-black border-t border-white/[0.06] py-16 sm:py-20 md:py-24 lg:py-32">
+            <div className="px-4 sm:px-6 md:px-12 mb-10 md:mb-16">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -281,7 +272,7 @@ export default function App() {
                 </p>
               </motion.div>
             </div>
-            <div className="px-6 md:px-12">
+            <div className="px-4 sm:px-6 md:px-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[...Array(4)].map((_, i) => (
                   <GalleryItem key={i} index={i} />

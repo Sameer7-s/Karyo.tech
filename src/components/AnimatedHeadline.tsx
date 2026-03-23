@@ -25,7 +25,7 @@ export function AnimatedHeadline() {
   ];
 
   return (
-    <section className="p-6 md:p-12 py-40 bg-[#050505] border-t border-white/5 relative overflow-hidden">
+    <section className="p-4 sm:p-6 md:p-12 py-20 sm:py-28 md:py-40 bg-[#0A0A0A] relative overflow-hidden">
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
@@ -51,7 +51,7 @@ export function AnimatedHeadline() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="text-4xl md:text-6xl lg:text-[5.2rem] font-bold leading-[1.1] tracking-tight text-white/20 transition-colors duration-700 group-hover:text-white/10 flex flex-wrap items-center"
+                className="text-2xl sm:text-3xl md:text-6xl lg:text-[5.2rem] font-bold leading-[1.1] tracking-tight text-white/20 transition-colors duration-700 group-hover:text-white/10 flex flex-wrap items-center"
               >
                 {line.split(" ").map((word, wordIndex) => {
                   return (
@@ -88,7 +88,7 @@ export function AnimatedHeadline() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
-                  className="text-4xl md:text-6xl lg:text-[5.2rem] font-bold leading-[1.1] tracking-tight text-white flex flex-wrap items-center"
+                  className="text-2xl sm:text-3xl md:text-6xl lg:text-[5.2rem] font-bold leading-[1.1] tracking-tight text-white flex flex-wrap items-center"
                 >
                   {line.split(" ").map((word, wordIndex) => {
                     return (

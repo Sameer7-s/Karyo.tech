@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import { SparklesCore } from "./ui/sparkles";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
-import { Navbar } from "./Navbar";
-
 /* ─────────────────────────────────────────
    Interactive KARYO Letter
 ───────────────────────────────────────── */
@@ -24,6 +22,27 @@ function Letter({ char }: { char: string;[key: string]: any }) {
         >
             {char}
         </motion.span>
+    );
+}
+
+/* ─────────────────────────────────────────
+   Wave Item (extracted to respect Rules of Hooks)
+───────────────────────────────────────── */
+function WaveItem({ i, scrollProgress }: { i: number; scrollProgress?: any }) {
+    const fallback = useMotionValue(0);
+    const progress = scrollProgress || fallback;
+    const waveScale = useTransform(progress, [0, 1], [1, 1.5 + i * 0.5]);
+    const waveOpacity = useTransform(progress, [0, 0.5, 1], [1, 0.5, 0]);
+    const waveY = useTransform(progress, [0, 1], [0, 50 * (i + 1)]);
+
+    return (
+        <motion.div
+            style={{ scaleX: waveScale, opacity: waveOpacity, y: waveY }}
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 1.5 + i * 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className={`h-[1px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7]/30 to-transparent blur-[1px] ${i === 1 ? 'w-[70%] opacity-50' : ''} animate-energy-pulse`}
+        />
     );
 }
 
@@ -52,12 +71,18 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
 
     const titleLetters = "KARYO".split("");
 
+    // Scroll-reactive transforms for sparkle center line
+    const scrollFallback = useMotionValue(0);
+    const scrollVal = scrollProgress || scrollFallback;
+    const sparkleOpacity = useTransform(scrollVal, [0, 0.4, 0.8], [1, 0.5, 0]);
+    const sparkleScaleX = useTransform(scrollVal, [0, 1], [1, 1.4]);
+    const sparkleY = useTransform(scrollVal, [0, 1], [0, 80]);
+
     return (
         <div className="h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden relative selection:bg-[#4FC3F7] selection:text-black">
-            <Navbar />
 
             {/* ── Background: Deep Starfield ── */}
-            <div className="absolute inset-0 z-0 scale-110">
+            <div className="absolute inset-0 z-0 scale-110" style={{ maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)" }}>
                 <SparklesCore
                     id="heroStarsDense"
                     background="transparent"
@@ -71,7 +96,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
             </div>
 
             {/* ── Background: Cyber Blue Highlights ── */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0" style={{ maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)" }}>
                 <SparklesCore
                     id="heroStarsBlue"
                     background="transparent"
@@ -136,23 +161,9 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
 
                 {/* Energy Pulse Waves Below Title (Scroll Reactive) */}
                 <div className="relative w-full max-w-lg mt-12 flex flex-col items-center gap-4">
-                    {[0, 1].map((i) => {
-                        // Waves expand and fade as user scrolls
-                        const waveScale = useTransform(scrollProgress || useMotionValue(0), [0, 1], [1, 1.5 + i * 0.5]);
-                        const waveOpacity = useTransform(scrollProgress || useMotionValue(0), [0, 0.5, 1], [1, 0.5, 0]);
-                        const waveY = useTransform(scrollProgress || useMotionValue(0), [0, 1], [0, 50 * (i + 1)]);
-
-                        return (
-                            <motion.div
-                                key={i}
-                                style={{ scaleX: waveScale, opacity: waveOpacity, y: waveY }}
-                                initial={{ scaleX: 0, opacity: 0 }}
-                                animate={{ scaleX: 1, opacity: 1 }}
-                                transition={{ duration: 2, delay: 1.5 + i * 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                className={`h-[1px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7]/30 to-transparent blur-[1px] ${i === 1 ? 'w-[70%] opacity-50' : ''} animate-energy-pulse`}
-                            />
-                        );
-                    })}
+                    {[0, 1].map((i) => (
+                        <WaveItem key={i} i={i} scrollProgress={scrollProgress} />
+                    ))}
                 </div>
 
                 {/* Dense Sparkle Center Line (Scroll Reactive) */}
@@ -160,9 +171,9 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     style={{
-                        opacity: useTransform(scrollProgress || useMotionValue(0), [0, 0.4, 0.8], [1, 0.5, 0]),
-                        scaleX: useTransform(scrollProgress || useMotionValue(0), [0, 1], [1, 1.4]),
-                        y: useTransform(scrollProgress || useMotionValue(0), [0, 1], [0, 80])
+                        opacity: sparkleOpacity,
+                        scaleX: sparkleScaleX,
+                        y: sparkleY
                     }}
                     transition={{ duration: 2, delay: 0.5 }}
                     className="relative w-[40rem] max-w-[90vw] h-24 mt-6 pointer-events-none"
@@ -188,12 +199,16 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                 </motion.div>
             </div>
 
-            {/* ── Cinematic Ambient Bottom Glow ── */}
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 2.5, delay: 1.8 }}
-                className="absolute bottom-0 left-0 right-0 h-[25vh] bg-gradient-to-t from-[#4FC3F7]/10 to-transparent pointer-events-none z-10"
+            {/* ── Cinematic Transition Blur & Gradient Fade ── */}
+            <div 
+                className="absolute bottom-0 left-0 right-0 h-[30vh] md:h-[40vh] pointer-events-none z-10"
+                style={{
+                    background: "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.6) 60%, rgba(10,10,10,1) 100%)",
+                    backdropFilter: "blur(4px)",
+                    WebkitBackdropFilter: "blur(4px)",
+                    maskImage: "linear-gradient(to bottom, transparent, black 100%)",
+                    WebkitMaskImage: "linear-gradient(to bottom, transparent, black 100%)"
+                }}
             />
 
             {/* ── Scroll Indicator Overlay ── */}

@@ -3,13 +3,13 @@ import { ArrowRight } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="w-full bg-black py-32 md:py-44 relative overflow-hidden">
+    <section className="w-full bg-black py-20 md:py-32 lg:py-44 relative overflow-hidden">
       {/* Subtle white radial glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-white opacity-[0.04] rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] max-w-[700px] aspect-square bg-white opacity-[0.04] rounded-full" />
       </div>
 
-      <div className="max-w-[1000px] mx-auto px-6 md:px-12 relative z-10 text-center">
+      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 md:px-12 relative z-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -41,7 +41,7 @@ export function CTASection() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full bg-white text-black font-bold text-base md:text-lg overflow-hidden transition-colors duration-500 hover:text-white"
+            className="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-white text-black font-bold text-base md:text-lg overflow-hidden transition-colors duration-500 hover:text-white"
           >
             <span className="absolute inset-0 w-full h-full bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
             <span className="relative z-10 flex items-center gap-3">
