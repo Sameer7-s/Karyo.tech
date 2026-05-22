@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 
@@ -13,21 +12,28 @@ export function CustomCursor() {
   const smoothCursorScale = useSpring(cursorScale, { damping: 20, stiffness: 200 });
 
   useEffect(() => {
+    // Only activate custom cursor on non-touch devices
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    if (isTouch) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       cursorX.set(clientX);
       cursorY.set(clientY);
 
       const target = e.target as HTMLElement;
-      
-      // Standard clickable elements
-      const isClickable = target.tagName === 'BUTTON' || target.tagName === 'A' ||
-        target.parentElement?.tagName === 'BUTTON' || target.parentElement?.tagName === 'A';
 
-      // Specific hover cards found in the app
-      const isSystemCard = target.closest('.system-card');
-      const isGalleryCard = target.closest('.gallery-card');
-      
+      // Standard clickable elements
+      const isClickable =
+        target.tagName === "BUTTON" ||
+        target.tagName === "A" ||
+        target.parentElement?.tagName === "BUTTON" ||
+        target.parentElement?.tagName === "A";
+
+      // Specific hover cards
+      const isSystemCard = target.closest(".system-card");
+      const isGalleryCard = target.closest(".gallery-card");
+
       if (isSystemCard || isGalleryCard) {
         cursorScale.set(3.5);
       } else if (isClickable) {
@@ -37,7 +43,7 @@ export function CustomCursor() {
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [cursorX, cursorY, cursorScale]);
 
@@ -55,7 +61,7 @@ export function CustomCursor() {
           translateY: "-50%",
         }}
       />
-      
+
       {/* Custom Cursor Outer Ring */}
       <motion.div
         className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[99998] hidden md:block border will-change-transform"
@@ -65,8 +71,16 @@ export function CustomCursor() {
           scale: smoothCursorScale,
           translateX: "-50%",
           translateY: "-50%",
-          borderColor: useTransform(smoothCursorScale, [1, 3.5], ["rgba(255,255,255,0.25)", "rgba(255,255,255,0.7)"]),
-          boxShadow: useTransform(smoothCursorScale, [1, 3.5], ["0 0 0px rgba(255,255,255,0)", "0 0 12px rgba(255,255,255,0.3)"]),
+          borderColor: useTransform(
+            smoothCursorScale,
+            [1, 3.5],
+            ["rgba(255,255,255,0.25)", "rgba(255,255,255,0.7)"]
+          ),
+          boxShadow: useTransform(
+            smoothCursorScale,
+            [1, 3.5],
+            ["0 0 0px rgba(255,255,255,0)", "0 0 12px rgba(255,255,255,0.3)"]
+          ),
         }}
       />
     </>

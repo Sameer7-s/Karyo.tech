@@ -1,12 +1,11 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { SparklesCore } from "./ui/sparkles";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, MotionValue } from "motion/react";
 
 /* ─────────────────────────────────────────
    Interactive KARYO Letter
 ───────────────────────────────────────── */
-function Letter({ char }: { char: string;[key: string]: any }) {
+function Letter({ char }: { char: string; [key: string]: any }) {
     return (
         <motion.span
             variants={{
@@ -26,9 +25,9 @@ function Letter({ char }: { char: string;[key: string]: any }) {
 }
 
 /* ─────────────────────────────────────────
-   Wave Item (extracted to respect Rules of Hooks)
+   Wave Item
 ───────────────────────────────────────── */
-function WaveItem({ i, scrollProgress }: { i: number; scrollProgress?: any }) {
+function WaveItem({ i, scrollProgress }: { i: number; scrollProgress?: MotionValue<number>; [key: string]: any }) {
     const fallback = useMotionValue(0);
     const progress = scrollProgress || fallback;
     const waveScale = useTransform(progress, [0, 1], [1, 1.5 + i * 0.5]);
@@ -41,33 +40,52 @@ function WaveItem({ i, scrollProgress }: { i: number; scrollProgress?: any }) {
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 1 }}
             transition={{ duration: 2, delay: 1.5 + i * 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className={`h-[1px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7]/30 to-transparent blur-[1px] ${i === 1 ? 'w-[70%] opacity-50' : ''} animate-energy-pulse`}
+            className={`h-[1px] w-full bg-gradient-to-r from-transparent via-[#4FC3F7]/30 to-transparent blur-[1px]${i === 1 ? ' w-[70%] opacity-50' : ''}`}
         />
     );
 }
 
 /* ─────────────────────────────────────────
    Main Intro Component
+   Props: scrollProgress + smoothX/Y passed from App to avoid duplicate listeners
 ───────────────────────────────────────── */
-export function Intro({ scrollProgress }: { scrollProgress?: any }) {
-    // Mouse tracking for parallax
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
+interface IntroProps {
+    scrollProgress?: MotionValue<number>;
+    smoothX?: MotionValue<number>;
+    smoothY?: MotionValue<number>;
+}
 
-    // Smooth springs for 3D parallax
-    const rotateX = useSpring(useTransform(mouseY, (y: number) => (y - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * -0.008), { damping: 30, stiffness: 100 });
-    const rotateY = useSpring(useTransform(mouseX, (x: number) => (x - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.008), { damping: 30, stiffness: 100 });
-    const translX = useSpring(useTransform(mouseX, (x: number) => (x - (typeof window !== 'undefined' ? window.innerWidth / 2 : 0)) * 0.012), { damping: 35, stiffness: 80 });
-    const translY = useSpring(useTransform(mouseY, (y: number) => (y - (typeof window !== 'undefined' ? window.innerHeight / 2 : 0)) * 0.012), { damping: 35, stiffness: 80 });
+export function Intro({ scrollProgress, smoothX, smoothY }: IntroProps) {
+    // Fall back to local motion values if not provided (standalone usage)
+    const localMouseX = useMotionValue(0);
+    const localMouseY = useMotionValue(0);
 
+    const activeX = smoothX || localMouseX;
+    const activeY = smoothY || localMouseY;
+
+    // 3D parallax — only attach listener if props not supplied
     useEffect(() => {
+        if (smoothX && smoothY) return; // parent already tracking mouse
+
         const handleMouseMove = (e: MouseEvent) => {
-            mouseX.set(e.clientX);
-            mouseY.set(e.clientY);
+            localMouseX.set(e.clientX);
+            localMouseY.set(e.clientY);
         };
-        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mousemove", handleMouseMove, { passive: true });
         return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+    }, [smoothX, smoothY, localMouseX, localMouseY]);
+
+    // Smooth springs for 3D parallax — derived from the unified motion values
+    const halfW = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+    const halfH = typeof window !== 'undefined' ? window.innerHeight / 2 : 0;
+
+    // When smoothX/Y are from App, they're already -0.5…0.5 (normalized).
+    // When local, they're raw px values. Scale accordingly.
+    const isNormalized = !!smoothX;
+    const rotateX = useSpring(useTransform(activeY, (y) => isNormalized ? y * -5 : (y - halfH) * -0.008), { damping: 30, stiffness: 100 });
+    const rotateY = useSpring(useTransform(activeX, (x) => isNormalized ? x * 5 : (x - halfW) * 0.008), { damping: 30, stiffness: 100 });
+    const translX = useSpring(useTransform(activeX, (x) => isNormalized ? x * 8 : (x - halfW) * 0.012), { damping: 35, stiffness: 80 });
+    const translY = useSpring(useTransform(activeY, (y) => isNormalized ? y * 8 : (y - halfH) * 0.012), { damping: 35, stiffness: 80 });
 
     const titleLetters = "KARYO".split("");
 
@@ -88,7 +106,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                     background="transparent"
                     minSize={0.4}
                     maxSize={1.1}
-                    particleDensity={100}
+                    particleDensity={80}
                     className="w-full h-full"
                     particleColor="#FFFFFF"
                     speed={0.3}
@@ -102,7 +120,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                     background="transparent"
                     minSize={0.8}
                     maxSize={1.8}
-                    particleDensity={25}
+                    particleDensity={20}
                     className="w-full h-full"
                     particleColor="#4FC3F7"
                     speed={0.5}
@@ -121,7 +139,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                         y: translY,
                         transformStyle: "preserve-3d"
                     }}
-                    className="relative active:scale-95 transition-transform duration-500"
+                    className="relative"
                 >
                     {/* Cinematic Title Reveal */}
                     <motion.h1
@@ -189,7 +207,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                         background="transparent"
                         minSize={0.2}
                         maxSize={0.8}
-                        particleDensity={1000}
+                        particleDensity={600}
                         className="w-full h-full"
                         particleColor="#FFFFFF"
                         speed={0.2}
@@ -200,7 +218,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
             </div>
 
             {/* ── Cinematic Transition Blur & Gradient Fade ── */}
-            <div 
+            <div
                 className="absolute bottom-0 left-0 right-0 h-[30vh] md:h-[40vh] pointer-events-none z-10"
                 style={{
                     background: "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.6) 60%, rgba(10,10,10,1) 100%)",
@@ -225,7 +243,7 @@ export function Intro({ scrollProgress }: { scrollProgress?: any }) {
                     <div className="w-[1px] h-12 bg-gradient-to-b from-white to-transparent" />
                 </div>
 
-                {/* Advanced Animated Scroll Pill */}
+                {/* Animated Scroll Pill */}
                 <div className="w-6 h-10 rounded-full border border-white/10 flex justify-center pt-2 bg-white/5 backdrop-blur-sm shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
                     <motion.div
                         animate={{

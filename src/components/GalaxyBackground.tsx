@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import { motion, MotionValue, useTransform } from "motion/react";
+import { MotionValue } from "motion/react";
 
 /* ── Types ── */
 interface Star {
@@ -7,9 +7,9 @@ interface Star {
   y: number;
   size: number;
   baseOpacity: number;
-  twinkleSpeed: number;   // radians per frame
-  twinkleOffset: number;  // random phase offset
-  layer: 0 | 1 | 2;      // 0 = far, 1 = mid, 2 = near
+  twinkleSpeed: number;
+  twinkleOffset: number;
+  layer: 0 | 1 | 2;
 }
 
 interface GalaxyBackgroundProps {
@@ -18,33 +18,35 @@ interface GalaxyBackgroundProps {
 }
 
 /* ── Constants ── */
-const PARALLAX_FACTORS = [0.2, 0.5, 1.0]; // far, mid, near
-const STAR_MAX_SHIFT = 2; // px
+const PARALLAX_FACTORS = [0.2, 0.5, 1.0];
+const STAR_MAX_SHIFT = 2;
 
 /* ── Helpers ── */
 function rand(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-function createStars(width: number, height: number): Star[] {
+function createStars(width: number, height: number, isMobile: boolean): Star[] {
   const stars: Star[] = [];
 
-  // Layer 0 — far background (120–160 stars)
-  const farCount = Math.round(rand(120, 160));
+  // Fewer stars on mobile for 30fps-budget savings
+  const farCount   = isMobile ? 60  : Math.round(rand(120, 160));
+  const midCount   = isMobile ? 15  : 30;
+  const nearCount  = isMobile ? 20  : Math.round(rand(40, 60));
+
   for (let i = 0; i < farCount; i++) {
     stars.push({
       x: Math.random() * width,
       y: Math.random() * height,
       size: 1,
       baseOpacity: rand(0.2, 0.4),
-      twinkleSpeed: rand(0.003, 0.008), // ~8–20s at 60fps
+      twinkleSpeed: rand(0.003, 0.008),
       twinkleOffset: Math.random() * Math.PI * 2,
       layer: 0,
     });
   }
 
-  // Layer 1 — mid (30 stars)
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < midCount; i++) {
     stars.push({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -56,8 +58,6 @@ function createStars(width: number, height: number): Star[] {
     });
   }
 
-  // Layer 2 — near foreground (40–60 stars)
-  const nearCount = Math.round(rand(40, 60));
   for (let i = 0; i < nearCount; i++) {
     stars.push({
       x: Math.random() * width,
@@ -98,11 +98,10 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
       isMobileRef.current = window.innerWidth < 768;
     };
     check();
-    window.addEventListener("resize", check);
+    window.addEventListener("resize", check, { passive: true });
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Init & animation loop
   const initCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -119,7 +118,7 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
     const ctx = canvas.getContext("2d");
     if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    starsRef.current = createStars(w, h);
+    starsRef.current = createStars(w, h, isMobileRef.current);
   }, []);
 
   useEffect(() => {
@@ -131,6 +130,8 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
     if (!ctx) return;
 
     let isVisible = true;
+    // Mobile: skip every other frame (effectively 30fps)
+    let frameSkip = 0;
 
     const handleVisibility = () => {
       isVisible = !document.hidden;
@@ -140,13 +141,20 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
-    const handleResize = () => {
-      initCanvas();
-    };
-    window.addEventListener("resize", handleResize);
+    const handleResize = () => { initCanvas(); };
+    window.addEventListener("resize", handleResize, { passive: true });
 
     function draw() {
       if (!isVisible) return;
+
+      // Throttle to ~30fps on mobile
+      if (isMobileRef.current) {
+        frameSkip = (frameSkip + 1) % 2;
+        if (frameSkip !== 0) {
+          rafRef.current = requestAnimationFrame(draw);
+          return;
+        }
+      }
 
       const w = canvas!.style.width ? parseInt(canvas!.style.width) : window.innerWidth;
       const h = canvas!.style.height ? parseInt(canvas!.style.height) : window.innerHeight;
@@ -160,11 +168,9 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
       frameRef.current += 1;
 
       for (const star of starsRef.current) {
-        // Sine-based twinkle
         const twinkle = Math.sin(frameRef.current * star.twinkleSpeed + star.twinkleOffset);
         const opacity = star.baseOpacity + twinkle * 0.15;
 
-        // Parallax offset (disabled on mobile)
         const pFactor = PARALLAX_FACTORS[star.layer];
         const ox = isMobile ? 0 : mx * STAR_MAX_SHIFT * pFactor;
         const oy = isMobile ? 0 : my * STAR_MAX_SHIFT * pFactor;
@@ -174,7 +180,6 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
 
         ctx!.beginPath();
         ctx!.arc(drawX, drawY, star.size, 0, Math.PI * 2);
-        // Slight blue tint on stars
         const blue = star.layer === 2 ? 255 : 230;
         ctx!.fillStyle = `rgba(220, 230, ${blue}, ${Math.max(0, Math.min(1, opacity))})`;
         ctx!.fill();
@@ -192,13 +197,40 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
     };
   }, [initCanvas]);
 
-  /* Nebula transforms — subtle parallax (2–4px) */
-  const nebulaX1 = useTransform(smoothX, (v) => v * 4);
-  const nebulaY1 = useTransform(smoothY, (v) => v * 4);
-  const nebulaX2 = useTransform(smoothX, (v) => v * -3);
-  const nebulaY2 = useTransform(smoothY, (v) => v * -3);
-  const nebulaX3 = useTransform(smoothX, (v) => v * 2);
-  const nebulaY3 = useTransform(smoothY, (v) => v * -2);
+  /* Nebula transforms — subtle parallax */
+  const nebulaStyle1 = {
+    right: "-10%",
+    bottom: "20%",
+    width: "60vw",
+    height: "60vw",
+    maxWidth: "900px",
+    maxHeight: "900px",
+    background: "radial-gradient(circle, rgba(106, 92, 255, 0.18) 0%, transparent 70%)",
+    position: "absolute" as const,
+    // Static position — no continuous JS animation
+  };
+
+  const nebulaStyle2 = {
+    left: "-5%",
+    top: "40%",
+    width: "50vw",
+    height: "50vw",
+    maxWidth: "750px",
+    maxHeight: "750px",
+    background: "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
+    position: "absolute" as const,
+  };
+
+  const nebulaStyle3 = {
+    right: "15%",
+    top: "5%",
+    width: "45vw",
+    height: "45vw",
+    maxWidth: "700px",
+    maxHeight: "700px",
+    background: "radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, transparent 70%)",
+    position: "absolute" as const,
+  };
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -206,9 +238,7 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
       <div
         className="absolute inset-0"
         style={{
-          background: `
-            linear-gradient(180deg, #000000 0%, #0B0B1A 40%, #0A0F2C 70%, #050510 100%)
-          `,
+          background: `linear-gradient(180deg, #000000 0%, #0B0B1A 40%, #0A0F2C 70%, #050510 100%)`,
         }}
       />
 
@@ -219,82 +249,12 @@ export function GalaxyBackground({ smoothX, smoothY }: GalaxyBackgroundProps) {
         style={{ mixBlendMode: "screen" }}
       />
 
-      {/* ── Nebula glow 1 — Purple (bottom-right) ── */}
-      <motion.div
-        className="absolute"
-        style={{
-          right: "-10%",
-          bottom: "20%",
-          width: "60vw",
-          height: "60vw",
-          maxWidth: "900px",
-          maxHeight: "900px",
-          background: "radial-gradient(circle, rgba(106, 92, 255, 0.18) 0%, transparent 70%)",
-          x: nebulaX1,
-          y: nebulaY1,
-        }}
-        animate={{
-          x: [0, 30, -20, 0],
-          y: [0, -25, 15, 0],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {/* ── Static nebula glows — GPU-composited, no JS animation ── */}
+      <div style={nebulaStyle1} />
+      <div style={nebulaStyle2} />
+      <div style={nebulaStyle3} />
 
-      {/* ── Nebula glow 2 — Pink (center-left) ── */}
-      <motion.div
-        className="absolute"
-        style={{
-          left: "-5%",
-          top: "40%",
-          width: "50vw",
-          height: "50vw",
-          maxWidth: "750px",
-          maxHeight: "750px",
-          background: "radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%)",
-          x: nebulaX2,
-          y: nebulaY2,
-        }}
-        animate={{
-          x: [0, -25, 35, 0],
-          y: [0, 20, -30, 0],
-        }}
-        transition={{
-          duration: 38,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* ── Nebula glow 3 — Blue (top-right diagonal) ── */}
-      <motion.div
-        className="absolute"
-        style={{
-          right: "15%",
-          top: "5%",
-          width: "45vw",
-          height: "45vw",
-          maxWidth: "700px",
-          maxHeight: "700px",
-          background: "radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, transparent 70%)",
-          x: nebulaX3,
-          y: nebulaY3,
-        }}
-        animate={{
-          x: [0, 20, -15, 0],
-          y: [0, -15, 25, 0],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* ── Hero focus light — Subtle radial glow behind hero text ── */}
+      {/* ── Hero focus light ── */}
       <div
         className="absolute left-1/2 top-[40%] -translate-x-1/2 -translate-y-1/2"
         style={{

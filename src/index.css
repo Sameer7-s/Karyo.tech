@@ -1,48 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Audiowide&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Inter", sans-serif;
+  --font-display: "Syne", sans-serif;
+  --font-orbitron: "Orbitron", sans-serif;
+  --font-exo: "Exo 2", sans-serif;
 }
 
-/* ===== Smooth Scroll & Snap Foundation ===== */
-html {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
+/* ===== Base Styles ===== */
+@layer base {
+  body {
+    @apply bg-black text-white antialiased selection:bg-white selection:text-black;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
 }
 
-html.lenis, html.lenis body {
+/* ===== Lenis Scroll Config ===== */
+/* Lenis manages all scroll — native snap disabled entirely */
+html.lenis,
+html.lenis body {
   height: auto;
-  scroll-snap-type: none;
 }
 
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
 
-.scroll-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  min-height: 100vh;
-  position: relative;
-}
-
 /* ===== Liquid Gradient ===== */
 @keyframes liquid-flow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
 .animate-liquid {
-  background: linear-gradient(
-    135deg,
-    #0ea5e9,
-    #10b981,
-    #14b8a6,
-    #2dd4bf,
-    #0ea5e9
-  );
+  background: linear-gradient(135deg, #0ea5e9, #10b981, #14b8a6, #2dd4bf, #0ea5e9);
   background-size: 300% 300%;
   animation: liquid-flow 12s ease-in-out infinite;
   will-change: background-position;
@@ -54,7 +51,7 @@ html.lenis, html.lenis body {
 
 /* ===== Marquee — GPU accelerated ===== */
 @keyframes marquee {
-  0% { transform: translate3d(0, 0, 0); }
+  0%   { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-50%, 0, 0); }
 }
 
@@ -64,18 +61,11 @@ html.lenis, html.lenis body {
   backface-visibility: hidden;
 }
 
-/* ===== Base Styles ===== */
-@layer base {
-  body {
-    @apply bg-black text-white antialiased selection:bg-white selection:text-black;
-    font-family: var(--font-sans);
-    font-display: swap;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    overflow-x: hidden;
-  }
-}
+/* ===== Premium Scrollbar ===== */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
 
 /* ===== GPU-accelerated utility ===== */
 .gpu-accelerated {
@@ -84,26 +74,40 @@ html.lenis, html.lenis body {
   backface-visibility: hidden;
 }
 
-/* ===== Premium Scrollbar ===== */
-::-webkit-scrollbar {
-  width: 6px;
+/* ===== Futuristic Design Tokens ===== */
+:root {
+  --accent-blue: #00BFFF;
+  --bg-deep: #050505;
 }
-::-webkit-scrollbar-track {
-  background: #000;
+
+.glass-dark {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 10px;
+
+.glow-blue {
+  box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+
+/* ===== Premium Text Shimmer ===== */
+@keyframes gradient-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-gradient-sweep {
+  animation: gradient-sweep 7s linear infinite;
+  will-change: background-position;
 }
 
 /* ===== Reduced Motion — disable heavy animations ===== */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-liquid,
-  .animate-liquid-fast {
+  .animate-liquid-fast,
+  .animate-gradient-sweep {
     animation: none !important;
   }
 
@@ -118,49 +122,58 @@ html.lenis, html.lenis body {
   .animate-marquee {
     animation-duration: 60s;
   }
+
   .glass-dark {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
   }
 }
 
-/* ===== Futuristic Design Tokens ===== */
-:root {
-  --accent-blue: #00BFFF;
-  --bg-deep: #050505;
+/* ===== Luxury Lovable Component Additions ===== */
+.bg-gradient-soft {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
 }
-
-@keyframes pulse-glow {
-  0%, 100% { transform: scale(1); opacity: 0.15; }
-  50% { transform: scale(1.1); opacity: 0.25; }
+.bg-gradient-luxe {
+  background: linear-gradient(135deg, #dfc2a1, #e6d3ba, #d4b08c);
 }
-
-.animate-pulse-glow {
-  animation: pulse-glow 6s ease-in-out infinite;
+.text-gradient {
+  background: linear-gradient(135deg, #dfc2a1, #e6d3ba, #d4b08c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
-
-.glass-dark {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.shadow-luxe {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 10px 20px -5px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-
-.glow-blue {
-  box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(223, 194, 161, 0.4);
 }
-
-.glow-effect, .animate-pulse-glow {
-  display: none !important;
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
 }
-
-/* ===== Premium Text Shimmer ===== */
-@keyframes gradient-sweep {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
-
-.animate-gradient-sweep {
-  animation: gradient-sweep 7s linear infinite;
-  will-change: background-position;
+.underline-grow {
+  position: relative;
+}
+.underline-grow::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+.underline-grow:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }

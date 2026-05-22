@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, MapPin, Linkedin, Twitter, Calendar, ChevronDown, ArrowRight } from "lucide-react";
+import { submitContact, apiRequest } from "../api/adminApi";
+import { useToast } from "./common/Toast";
 
 /* ── B&W ContactSection ── */
 export function ContactSection() {
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const [projectTypeOpen, setProjectTypeOpen] = useState(false);
     const [selectedType, setSelectedType] = useState("AI Automation");
+    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        company: "",
+        message: "",
+    });
+    const { showToast } = useToast();
 
     const projectTypes = [
         "AI Automation",
@@ -23,6 +33,48 @@ export function ContactSection() {
             ? "border-white/40 shadow-[0_0_0_1px_rgba(255,255,255,0.12)] bg-white/[0.03]"
             : ""}
     `;
+
+    const updateField = (field: keyof typeof form, value: string) => {
+        setForm((current) => ({ ...current, [field]: value }));
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+            showToast("Name, email, and message are required", "error");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await submitContact({
+                name: form.name,
+                email: form.email,
+                subject: selectedType,
+                message: form.message,
+                source: "Contact Page",
+            });
+
+            await apiRequest("/service-request", {
+                method: "POST",
+                body: JSON.stringify({
+                    fullName: form.name,
+                    email: form.email,
+                    companyName: form.company,
+                    serviceType: selectedType,
+                    requirementDetails: form.message,
+                }),
+            });
+
+            setForm({ name: "", email: "", company: "", message: "" });
+            setSelectedType("AI Automation");
+            showToast("Data saved successfully. We will get back to you soon.", "success");
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <section className="relative bg-black py-16 sm:py-20 md:py-28 lg:py-40 overflow-hidden text-white selection:bg-white selection:text-black" id="contact">
@@ -134,7 +186,7 @@ export function ContactSection() {
                         transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
                         className="lg:col-span-7"
                     >
-                        <form className="bg-white/[0.02] backdrop-blur-sm border border-white/8 rounded-2xl p-5 sm:p-6 md:p-8 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+                        <form onSubmit={handleSubmit} className="bg-white/[0.02] backdrop-blur-sm border border-white/8 rounded-2xl p-5 sm:p-6 md:p-8 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 {/* Name Input */}
                                 <div className="relative group">
@@ -147,6 +199,8 @@ export function ContactSection() {
                                     </motion.label>
                                     <input
                                         type="text"
+                                        value={form.name}
+                                        onChange={(event) => updateField("name", event.target.value)}
                                         onFocus={() => setFocusedField('name')}
                                         onBlur={() => setFocusedField(null)}
                                         placeholder="John Doe"
@@ -164,6 +218,8 @@ export function ContactSection() {
                                     </motion.label>
                                     <input
                                         type="email"
+                                        value={form.email}
+                                        onChange={(event) => updateField("email", event.target.value)}
                                         onFocus={() => setFocusedField('email')}
                                         onBlur={() => setFocusedField(null)}
                                         placeholder="john@company.com"
@@ -183,6 +239,8 @@ export function ContactSection() {
                                 </motion.label>
                                 <input
                                     type="text"
+                                    value={form.company}
+                                    onChange={(event) => updateField("company", event.target.value)}
                                     onFocus={() => setFocusedField('company')}
                                     onBlur={() => setFocusedField(null)}
                                     placeholder="Company Name"
@@ -253,6 +311,8 @@ export function ContactSection() {
                                     Message
                                 </motion.label>
                                 <textarea
+                                    value={form.message}
+                                    onChange={(event) => updateField("message", event.target.value)}
                                     onFocus={() => setFocusedField('message')}
                                     onBlur={() => setFocusedField(null)}
                                     placeholder="Tell us about your automation needs..."
@@ -267,11 +327,12 @@ export function ContactSection() {
                                 whileTap={{ scale: 0.985 }}
                                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                 className="w-full relative group overflow-hidden rounded-xl bg-white text-black font-bold text-lg py-5 flex items-center justify-center gap-3 transition-colors duration-500 hover:text-white"
-                                type="button"
+                                type="submit"
+                                disabled={loading}
                             >
                                 <span className="absolute inset-0 w-full h-full bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
                                 <span className="relative z-10 flex items-center gap-2">
-                                    Start the Conversation <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                                    {loading ? "Saving..." : "Start the Conversation"} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                                 </span>
                             </motion.button>
                         </form>

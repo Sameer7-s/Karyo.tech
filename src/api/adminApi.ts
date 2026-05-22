@@ -1,0 +1,115 @@
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const TOKEN_KEY = "karyo_admin_token";
+
+export type ApiListResponse<T> = {
+  success: boolean;
+  rows: T[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+};
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Content-Type") && options.body) headers.set("Content-Type", "application/json");
+  const token = getToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || "Something went wrong. Please try again.");
+  }
+  return data as T;
+}
+
+export function toQuery(params: Record<string, string | number | undefined>) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "" && value !== "all") search.set(key, String(value));
+  });
+  return search.toString();
+}
+
+export const adminApi = {
+  login: (email: string, password: string) =>
+    apiRequest<{ success: boolean; token: string; admin: AdminUser }>("/admin/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+  me: () => apiRequest<{ success: boolean; admin: AdminUser }>("/admin/me"),
+  logout: () => apiRequest<{ success: boolean; message: string }>("/admin/logout", { method: "POST" }),
+  dashboard: () => apiRequest<DashboardStats>("/admin/dashboard-stats"),
+  list: <T>(path: string, params: Record<string, string | number | undefined>) =>
+    apiRequest<ApiListResponse<T>>(`${path}?${toQuery(params)}`),
+  patch: (path: string, body: unknown) =>
+    apiRequest<{ success: boolean; message: string }>(path, { method: "PATCH", body: JSON.stringify(body) }),
+  delete: (path: string) =>
+    apiRequest<{ success: boolean; message: string }>(path, { method: "DELETE" }),
+  updateSettings: (name: string) =>
+    apiRequest<{ success: boolean; admin: AdminUser; message: string }>("/admin/settings", {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiRequest<{ success: boolean; message: string }>("/admin/settings/password", {
+      method: "PATCH",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+};
+
+export async function submitContact(payload: Record<string, string>) {
+  return apiRequest<{ success: boolean; message: string }>("/contact", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  lastLogin?: string;
+};
+
+export type DashboardStats = {
+  totalContacts: number;
+  totalServiceRequests: number;
+  totalProjectInquiries: number;
+  totalSubscribers: number;
+  totalFeedback: number;
+  newMessages: number;
+  pendingRequests: number;
+  completedProjects: number;
+  recentActivities: ActivityLog[];
+  recentContacts: AdminRecord[];
+  recentServiceRequests: AdminRecord[];
+  monthlySubmissions: { month: string; total: number }[];
+  statusDistribution: { status: string; total: number }[];
+  serviceTypeDistribution: { name: string; total: number }[];
+};
+
+export type ActivityLog = {
+  id: string;
+  action: string;
+  performedBy: string;
+  recordType: string;
+  recordId?: string;
+  createdAt: string;
+};
+
+export type AdminRecord = Record<string, string | number | boolean | null | undefined> & { id: string };

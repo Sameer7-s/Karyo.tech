@@ -12,21 +12,29 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        // Correctly point @ to the src directory
+        '@': path.resolve(__dirname, './src'),
       },
     },
     build: {
       target: 'esnext',
       minify: 'esbuild',
       cssMinify: true,
+      // Skip compressed size reporting for faster builds
+      reportCompressedSize: false,
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'vendor-motion': ['motion/react'],
+            'vendor-lenis': ['lenis'],
+            'vendor-lucide': ['lucide-react'],
           },
         },
       },
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'motion/react', 'lenis', 'lucide-react'],
     },
     server: {
       hmr: process.env.DISABLE_HMR !== 'true',

@@ -34,13 +34,13 @@ const services = [
 
 export function ServicesShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
-
   const active = services[activeIndex];
 
   return (
     <section className="w-full bg-black py-16 md:py-24 lg:py-40">
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-12">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 md:gap-12 lg:gap-16 xl:gap-24">
+
           {/* LEFT — Dynamic Image Card */}
           <div className="w-full lg:max-w-none lg:w-[40%] flex-shrink-0">
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#111]">
@@ -50,6 +50,8 @@ export function ServicesShowcase() {
                   key={active.id}
                   src={active.image}
                   alt={active.title}
+                  loading="lazy"
+                  decoding="async"
                   initial={{ opacity: 0, scale: 1.08 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.97 }}
@@ -89,52 +91,43 @@ export function ServicesShowcase() {
               const isActive = service.id === activeIndex;
 
               return (
-                <motion.div
+                <div
                   key={service.id}
                   onMouseEnter={() => setActiveIndex(service.id)}
                   onClick={() => setActiveIndex(service.id)}
-                  className="relative border-b border-white/10 cursor-pointer"
-                  animate={{
-                    paddingTop: isActive ? 28 : 20,
-                    paddingBottom: isActive ? 28 : 20,
-                  }}
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className={`relative border-b border-white/10 cursor-pointer transition-[padding] duration-300 ease-in-out ${
+                    isActive ? "py-7" : "py-5"
+                  }`}
                 >
                   <div className="flex items-center gap-3 md:gap-4">
-                    {/* Service title */}
-                    <motion.h3
-                      animate={{
-                        color: isActive ? "#ffffff" : "rgba(255,255,255,0.35)",
-                        scale: isActive ? 1 : 0.98,
-                      }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                      className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.02em] origin-left"
+                    {/* Service title — CSS transition only, no layout animation */}
+                    <h3
+                      className={`text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.02em] origin-left transition-all duration-300 ${
+                        isActive ? "text-white scale-100" : "text-white/35 scale-[0.98]"
+                      }`}
                       style={{ fontFamily: "'Syne', sans-serif" }}
                     >
                       {service.title}
-                    </motion.h3>
+                    </h3>
 
                     {/* Index number */}
-                    <motion.span
-                      animate={{
-                        color: isActive ? "#ef4444" : "rgba(255,255,255,0.25)",
-                      }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                      className="text-xs md:text-sm font-normal mt-1"
+                    <span
+                      className={`text-xs md:text-sm font-normal mt-1 transition-colors duration-300 ${
+                        isActive ? "text-red-500" : "text-white/25"
+                      }`}
                       style={{ fontFamily: "'Geist', 'Inter', sans-serif" }}
                     >
                       {`{${service.index}}`}
-                    </motion.span>
+                    </span>
                   </div>
 
-                  {/* Active indicator bar */}
-                  <motion.div
-                    className="absolute left-0 bottom-0 h-[1px] bg-white/30"
-                    initial={{ width: "0%" }}
-                    animate={{ width: isActive ? "100%" : "0%" }}
-                    transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                  {/* Active indicator bar — CSS only */}
+                  <div
+                    className={`absolute left-0 bottom-0 h-[1px] bg-white/30 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                      isActive ? "w-full" : "w-0"
+                    }`}
                   />
-                </motion.div>
+                </div>
               );
             })}
           </div>

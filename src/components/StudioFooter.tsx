@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
+import { Link } from "react-router-dom";
 
 /* ── Ease tokens ── */
 const EASE_PREMIUM: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -39,7 +40,12 @@ const socialIcons = [
   { icon: <XIcon />, label: "X", href: "#" },
 ];
 
-
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "Work", href: "/work" },
+  { name: "About Us", href: "/about" },
+  { name: "Contact Us", href: "/contact" },
+];
 
 export function StudioFooter() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -56,9 +62,6 @@ export function StudioFooter() {
       className="bg-black text-white pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-0 font-sans selection:bg-white selection:text-black border-t border-white/5 relative overflow-hidden"
     >
       <div className="max-w-[1800px] mx-auto relative z-10 px-4 sm:px-6 md:px-12 lg:px-20">
-
-
-
 
         {/* ═══════════════════════════════════════════
             SOCIAL + LEGAL + LOCATIONS GRID
@@ -138,16 +141,13 @@ export function StudioFooter() {
                   whileHover={{ x: 5, color: "white" }}
                   className="text-sm md:text-base font-medium tracking-wide text-white/60 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  {legal}{" "}
-                  <span className="opacity-0 -translate-x-4 transition-all duration-300 text-sm">
-                    ↗
-                  </span>
+                  {legal}
                 </motion.a>
               ))}
             </motion.div>
           </div>
 
-          {/* Locations — beside Legal */}
+          {/* Locations */}
           <div className="md:col-span-4 lg:col-span-3 lg:col-start-8">
             <motion.span
               initial={{ opacity: 0 }}
@@ -206,7 +206,7 @@ export function StudioFooter() {
             </motion.div>
           </div>
 
-          {/* Navigation — right aligned */}
+          {/* Navigation — right aligned, now uses <Link> for SPA routing */}
           <div className="md:col-span-4 lg:col-span-2 lg:col-start-11">
             <motion.span
               initial={{ opacity: 0 }}
@@ -229,15 +229,9 @@ export function StudioFooter() {
               }}
               className="flex flex-col gap-6"
             >
-              {[
-                { name: "Home", href: "/" },
-                { name: "Work", href: "/#work" },
-                { name: "About Us", href: "/about" },
-                { name: "Contact Us", href: "/contact" }
-              ].map((link) => (
-                <motion.a
+              {navLinks.map((link) => (
+                <motion.div
                   key={link.name}
-                  href={link.href}
                   variants={{
                     hidden: { opacity: 0, x: -20 },
                     show: {
@@ -246,18 +240,20 @@ export function StudioFooter() {
                       transition: { duration: 0.8, ease: EASE_PREMIUM },
                     },
                   }}
-                  whileHover={{ x: 4, color: "white" }}
-                  className="text-sm md:text-base font-medium tracking-wide text-gray-400 hover:text-white transition-all duration-300 ease-out flex w-fit"
+                  whileHover={{ x: 4 }}
                 >
-                  {link.name}
-                </motion.a>
+                  <Link
+                    to={link.href}
+                    className="text-sm md:text-base font-medium tracking-wide text-gray-400 hover:text-white transition-all duration-300 ease-out flex w-fit"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
             </motion.div>
           </div>
         </div>
       </div>
-
-
 
       {/* ═══════════════════════════════════════════
           BIG LOGO SECTION
@@ -284,30 +280,21 @@ export function StudioFooter() {
       </div>
 
       {/* ═══════════════════════════════════════════
-          BACKGROUND GLOWS
+          STATIC AMBIENT GLOW — replaced heavy animated blobs
       ═══════════════════════════════════════════ */}
-      <motion.div
-        animate={{
-          x: [0, 100, -100, 0],
-          y: [0, -100, 100, 0],
-          scale: [1, 1.2, 0.8, 1],
+      <div
+        className="absolute bottom-0 right-0 w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
+        style={{
+          background: "radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)",
+          filter: "blur(60px)",
         }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-0 right-0 w-[60vw] max-w-[800px] h-[60vw] max-h-[800px] bg-white/10 blur-[80px] md:blur-[100px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3"
       />
-      <motion.div
-        animate={{
-          x: [0, -150, 150, 0],
-          y: [0, 150, -150, 0],
-          scale: [1, 0.8, 1.2, 1],
+      <div
+        className="absolute top-0 left-0 w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
+        style={{
+          background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)",
+          filter: "blur(60px)",
         }}
-        transition={{
-          duration: 25,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-        className="absolute top-0 left-0 w-[50vw] max-w-[600px] h-[50vw] max-h-[600px] bg-white/5 blur-[80px] md:blur-[100px] rounded-full pointer-events-none -translate-x-1/3 -translate-y-1/3"
       />
     </footer>
   );

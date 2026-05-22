@@ -1,68 +1,100 @@
 import { motion } from "motion/react";
-import { Zap, Palette, Brain } from "lucide-react";
+import { 
+  Scissors, 
+  Heart, 
+  Sparkles, 
+  Brush, 
+  Flower2, 
+  Palette, 
+  Droplet, 
+  Eye 
+} from "lucide-react";
 
-const differentiators = [
+const services = [
   {
-    icon: <Brain className="w-7 h-7" />,
-    title: "AI-Native Expertise",
-    description:
-      "We don't just design — we build intelligent systems. From automated workflows to AI-powered products, our approach starts with technology at its core.",
-    accent: "rgba(255,255,255,0.7)",
+    icon: <Scissors className="w-6 h-6" />,
+    title: "Hair Styling",
+    description: "Couture cuts & cinematic blowouts.",
   },
   {
-    icon: <Palette className="w-7 h-7" />,
-    title: "Award-Level Design",
-    description:
-      "Every pixel is intentional. We craft interfaces that feel premium, perform flawlessly, and leave lasting impressions on users and stakeholders alike.",
-    accent: "rgba(255,255,255,0.7)",
+    icon: <Heart className="w-6 h-6" />,
+    title: "Bridal Makeup",
+    description: "Heirloom looks for your day.",
   },
   {
-    icon: <Zap className="w-7 h-7" />,
-    title: "Speed & Precision",
-    description:
-      "We move fast without cutting corners. Rapid prototyping, parallel design-dev workflows, and a relentless focus on quality at every stage.",
-    accent: "rgba(255,255,255,0.7)",
+    icon: <Sparkles className="w-6 h-6" />,
+    title: "Facial Treatment",
+    description: "Lit-from-within glow rituals.",
+  },
+  {
+    icon: <Brush className="w-6 h-6" />,
+    title: "Nail Art",
+    description: "Hand-painted, gallery-worthy nails.",
+  },
+  {
+    icon: <Flower2 className="w-6 h-6" />,
+    title: "Spa & Massage",
+    description: "Restorative body ceremonies.",
+  },
+  {
+    icon: <Palette className="w-6 h-6" />,
+    title: "Hair Coloring",
+    description: "Custom-blended dimension.",
+  },
+  {
+    icon: <Droplet className="w-6 h-6" />,
+    title: "Skin Care",
+    description: "Personalised dermal science.",
+  },
+  {
+    icon: <Eye className="w-6 h-6" />,
+    title: "Eyebrow Styling",
+    description: "Architectural brow design.",
   },
 ];
 
 export function WhyChooseUs() {
   return (
-    <section className="w-full bg-black py-16 sm:py-20 md:py-28 lg:py-40 border-t border-white/[0.06]">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12">
+    <section className="w-full bg-black py-20 sm:py-28 md:py-32 lg:py-40 relative border-t border-white/[0.06]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 relative z-10">
+        
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-10 md:mb-20 lg:mb-28 max-w-2xl"
+          className="max-w-2xl mx-auto text-center"
         >
-          <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-white/30 block mb-4">
-            Why KARYO
+          <span className="text-[11px] uppercase tracking-[0.3em] text-white/50 block mb-4">
+            — Our Rituals
           </span>
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1] text-white"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-tight text-white"
             style={{ fontFamily: "'Syne', sans-serif" }}
           >
-            Built Different
+            Curated <span className="italic text-gradient">beauty</span> services
           </h2>
+          <p className="mt-6 text-white/60 md:text-lg">
+            Every ritual is tailored to your features, your mood, your moment.
+          </p>
         </motion.div>
 
         {/* Cards */}
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: true, margin: "-100px" }}
           variants={{
             hidden: { opacity: 0 },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+              transition: { staggerChildren: 0.1, delayChildren: 0.2 },
             },
           }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+          className="mt-20 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {differentiators.map((item, i) => (
+          {services.map((item, i) => (
             <motion.div
               key={i}
               variants={{
@@ -70,44 +102,40 @@ export function WhyChooseUs() {
                 visible: {
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+                  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
                 },
               }}
-              className="group relative p-8 md:p-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:bg-white/[0.03] transition-all duration-500 overflow-hidden"
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-500 hover:shadow-luxe hover:-translate-y-1"
             >
-              {/* Glow on hover */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-                style={{
-                  background: `radial-gradient(400px circle at 50% 0%, ${item.accent}08 0%, transparent 70%)`,
-                }}
-              />
-
-              {/* Top border highlight */}
-              <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-                style={{
-                  background: `linear-gradient(90deg, transparent, ${item.accent}40, transparent)`,
-                }}
-              />
+              {/* Card Background Animations */}
+              <div className="absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <div className="absolute inset-0 bg-gradient-soft"></div>
+                <div className="shimmer absolute inset-0"></div>
+              </div>
 
               {/* Icon */}
-              <div
-                className="w-14 h-14 rounded-xl border border-white/[0.08] flex items-center justify-center mb-8 transition-all duration-500 group-hover:scale-110"
-                style={{ color: item.accent }}
-              >
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-luxe text-black shadow-glow transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-110">
                 {item.icon}
               </div>
 
+              {/* Content */}
               <h3
-                className="text-xl md:text-2xl font-semibold tracking-tight text-white mb-4"
+                className="mt-8 text-2xl font-semibold tracking-tight text-white transition-colors duration-500"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 {item.title}
               </h3>
-              <p className="text-sm md:text-[15px] leading-relaxed text-white/45 group-hover:text-white/65 transition-colors duration-500">
+              <p className="mt-2 text-sm leading-relaxed text-white/60">
                 {item.description}
               </p>
+
+              {/* Hover Action */}
+              <div className="mt-8 flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/40">
+                <span className="underline-grow">Discover</span>
+                <span className="transition-transform duration-500 group-hover:translate-x-2 text-gradient">
+                  →
+                </span>
+              </div>
             </motion.div>
           ))}
         </motion.div>
