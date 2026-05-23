@@ -12,22 +12,22 @@ export function Topbar({ title, onLogout }: { title: string; onLogout: () => voi
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#0B0F19]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-white/[0.12] bg-black/45 font-exo backdrop-blur-[24px]">
       <div className="flex min-h-16 flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-6">
         <div className="pl-12 lg:pl-0">
-          <h1 className="text-xl font-semibold text-white">{title}</h1>
+          <h1 className="font-orbitron text-xl font-semibold uppercase tracking-normal text-white">{title}</h1>
           <p className="mt-1 text-xs text-white/40">{time.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="hidden items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white/35 md:flex">
+          <div className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/35 md:flex">
             <Search className="h-4 w-4" />
             Page search is inside each table
           </div>
-          <button className="rounded-md border border-white/10 bg-white/[0.03] p-2 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Notifications">
+          <button className="rounded-lg border border-white/10 bg-white/[0.04] p-2 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Notifications">
             <Bell className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#9D80CB] text-sm font-bold text-white">
+          <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 shadow-[0_0_24px_rgba(255,255,255,0.04)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-sm font-bold text-white">
               {admin?.name?.slice(0, 1) || "A"}
             </div>
             <div className="hidden sm:block">
@@ -35,7 +35,7 @@ export function Topbar({ title, onLogout }: { title: string; onLogout: () => voi
               <p className="text-xs text-white/40">{admin?.role}</p>
             </div>
           </div>
-          <button onClick={onLogout} className="rounded-md border border-white/10 bg-white/[0.03] p-2 text-white/60 hover:bg-rose-500/10 hover:text-rose-200" aria-label="Logout">
+          <button onClick={onLogout} className="rounded-lg border border-white/10 bg-white/[0.04] p-2 text-white/60 hover:bg-rose-500/10 hover:text-rose-200" aria-label="Logout">
             <LogOut className="h-5 w-5" />
           </button>
         </div>

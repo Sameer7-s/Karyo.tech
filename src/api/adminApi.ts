@@ -1,4 +1,20 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+function normalizeApiBaseUrl(raw: string | undefined) {
+  // Backend routes are mounted under `/api` (e.g. `/api/admin/login`).
+  // In production, the frontend is typically served from the same origin as the backend,
+  // so a relative `/api` base is the safest default.
+  const fallback = import.meta.env.PROD ? "/api" : "http://localhost:5000/api";
+  if (!raw) return fallback;
+
+  const trimmed = raw.trim().replace(/\/+$/, "");
+  if (!trimmed) return fallback;
+  if (trimmed.endsWith("/api")) return trimmed;
+
+  // If the caller provided only an origin (common misconfig: http://localhost:5000),
+  // assume they meant the API root under `/api`.
+  return `${trimmed}/api`;
+}
+
+const API_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 const TOKEN_KEY = "karyo_admin_token";
 
 export type ApiListResponse<T> = {
@@ -28,7 +44,8 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const url = `${API_URL}${path}`;
+  const response = await fetch(url, { ...options, headers });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.success === false) {
     throw new Error(data.message || "Something went wrong. Please try again.");

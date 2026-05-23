@@ -19,7 +19,7 @@ const databasePath = path.isAbsolute(rawDatabasePath)
 fs.mkdirSync(path.dirname(databasePath), { recursive: true });
 
 export const db = new DatabaseSync(databasePath);
-db.exec("PRAGMA foreign_keys = ON; PRAGMA journal_mode = DELETE; PRAGMA busy_timeout = 5000;");
+db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
 
 export function uid() {
   return randomUUID();
@@ -27,6 +27,10 @@ export function uid() {
 
 function now() {
   return new Date().toISOString();
+}
+
+function envFlag(name) {
+  return ["1", "true", "yes", "on"].includes(String(process.env[name] || "").toLowerCase());
 }
 
 function createTables() {
@@ -122,15 +126,51 @@ function createTables() {
   `);
 }
 
+function hasExistingSchema() {
+  const requiredTables = [
+    "admin_users",
+    "contact_messages",
+    "service_requests",
+    "project_inquiries",
+    "newsletter_subscribers",
+    "feedback",
+    "activity_logs",
+  ];
+  const rows = db.prepare(`
+    SELECT name FROM sqlite_master
+    WHERE type = 'table' AND name IN (${requiredTables.map(() => "?").join(",")})
+  `).all(...requiredTables);
+  return rows.length === requiredTables.length;
+}
+
 function seedAdmin() {
   const count = db.prepare("SELECT COUNT(*) AS total FROM admin_users").get().total;
-  if (count > 0) return;
-
   const createdAt = now();
   const password = process.env.ADMIN_PASSWORD || "Admin@123";
   const email = process.env.ADMIN_EMAIL || "admin@example.com";
   const name = process.env.ADMIN_NAME || "Admin";
   const passwordHash = bcrypt.hashSync(password, 12);
+
+  if (count > 0) {
+    if (!envFlag("ADMIN_RESET_PASSWORD_ON_START")) return;
+
+    const updatedAt = now();
+    const existingAdmin = db.prepare("SELECT id FROM admin_users WHERE email = ?").get(email.toLowerCase());
+    if (existingAdmin) {
+      db.prepare("UPDATE admin_users SET name = ?, passwordHash = ?, updatedAt = ? WHERE id = ?")
+        .run(name, passwordHash, updatedAt, existingAdmin.id);
+      console.log(`Admin password reset for ${email}`);
+      return;
+    }
+
+    db.prepare(`
+      INSERT INTO admin_users (id, name, email, passwordHash, role, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, 'admin', ?, ?)
+    `).run(uid(), name, email.toLowerCase(), passwordHash, updatedAt, updatedAt);
+
+    console.log(`Admin account created for ${email}`);
+    return;
+  }
 
   db.prepare(`
     INSERT INTO admin_users (id, name, email, passwordHash, role, createdAt, updatedAt)
@@ -141,7 +181,17 @@ function seedAdmin() {
 }
 
 export function initDatabase() {
-  createTables();
-  seedAdmin();
+  const schemaExists = hasExistingSchema();
+
+  if (!schemaExists) {
+    createTables();
+  }
+
+  try {
+    seedAdmin();
+  } catch (error) {
+    console.warn("Admin seed/reset write failed. Existing admin records will be used.");
+  }
+
   console.log("Database connected successfully");
 }

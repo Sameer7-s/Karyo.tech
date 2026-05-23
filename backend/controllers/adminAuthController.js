@@ -23,6 +23,10 @@ function signToken(admin) {
   );
 }
 
+function envFlag(name) {
+  return ["1", "true", "yes", "on"].includes(String(process.env[name] || "").toLowerCase());
+}
+
 export async function loginAdmin(req, res, next) {
   try {
     required(req.body, ["email", "password"]);
@@ -30,16 +34,26 @@ export async function loginAdmin(req, res, next) {
 
     const email = clean(req.body.email).toLowerCase();
     const admin = db.prepare("SELECT * FROM admin_users WHERE email = ?").get(email);
-    if (!admin || !(await bcrypt.compare(String(req.body.password), admin.passwordHash))) {
+    const password = String(req.body.password);
+    const passwordMatches = admin ? await bcrypt.compare(password, admin.passwordHash) : false;
+    const resetPasswordMatches = envFlag("ADMIN_RESET_PASSWORD_ON_START")
+      && email === String(process.env.ADMIN_EMAIL || "").toLowerCase()
+      && password === String(process.env.ADMIN_PASSWORD || "");
+
+    if (!admin || (!passwordMatches && !resetPasswordMatches)) {
       const error = new Error("Invalid credentials");
       error.status = 401;
       throw error;
     }
 
     const lastLogin = now();
-    db.prepare("UPDATE admin_users SET lastLogin = ?, updatedAt = ? WHERE id = ?").run(lastLogin, lastLogin, admin.id);
     const updatedAdmin = { ...admin, lastLogin, updatedAt: lastLogin };
-    createActivity("Admin logged in", updatedAdmin.name, "Admin", updatedAdmin.id);
+    try {
+      db.prepare("UPDATE admin_users SET lastLogin = ?, updatedAt = ? WHERE id = ?").run(lastLogin, lastLogin, admin.id);
+      createActivity("Admin logged in", updatedAdmin.name, "Admin", updatedAdmin.id);
+    } catch (error) {
+      console.warn("Login audit write failed. Continuing with a valid admin session.");
+    }
 
     ok(res, { token: signToken(updatedAdmin), admin: publicAdmin(updatedAdmin) });
   } catch (error) {
