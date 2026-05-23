@@ -45,7 +45,15 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const url = `${API_URL}${path}`;
-  const response = await fetch(url, { ...options, headers });
+  let response;
+  try {
+    response = await fetch(url, { ...options, headers });
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+      throw new Error("Unable to connect to the server. Please check your internet connection and try again.");
+    }
+    throw error;
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.success === false) {
     throw new Error(data.message || "Something went wrong. Please try again.");

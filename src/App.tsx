@@ -7,11 +7,9 @@ import { motion, useMotionValue, useSpring, AnimatePresence, useScroll } from "m
 import React, { useEffect, useState, useRef } from "react";
 import { Plus } from "lucide-react";
 import { Intro } from "./components/Intro";
-import { BrandPhilosophy } from "./components/BrandPhilosophy";
 import { TrustBar } from "./components/TrustBar";
 import { ServicesShowcase } from "./components/ServicesShowcase";
 import { ProcessSection } from "./components/ProcessSection";
-import { WhyChooseUs } from "./components/WhyChooseUs";
 import { Navbar } from "./components/Navbar";
 import { CTASection } from "./components/CTASection";
 import { StudioFooter } from "./components/StudioFooter";
@@ -123,7 +121,6 @@ function FAQSection() {
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-white"
-            style={{ fontFamily: "'Syne', sans-serif" }}
           >
             Clarifying Deliverable's Before They Begin with Real Process and Honest <span className="font-serif italic opacity-60">Answers.</span>
           </motion.h2>
@@ -228,7 +225,6 @@ export default function App() {
 
       <div className="relative z-10 w-full min-h-screen flex flex-col">
 
-        {/* ── 1. HERO ── */}
         <div ref={heroRef} className="h-screen w-full relative">
           <Intro scrollProgress={heroScrollProgress} smoothX={smoothX} smoothY={smoothY} />
         </div>
@@ -239,9 +235,6 @@ export default function App() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative"
         >
-
-          {/* ── 2. BRAND PHILOSOPHY ── */}
-          <BrandPhilosophy />
 
           {/* ── 3. TRUST / SOCIAL PROOF ── */}
           <TrustBar />
@@ -260,7 +253,6 @@ export default function App() {
               >
                 <h2
                   className="text-5xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-none"
-                  style={{ fontFamily: "'Syne', sans-serif" }}
                 >
                   Selected<br />Works<span className="text-xl sm:text-2xl md:text-4xl opacity-30 ml-2 md:ml-4">(4)</span>
                 </h2>
@@ -280,9 +272,6 @@ export default function App() {
 
           {/* ── 6. PROCESS ── */}
           <ProcessSection />
-
-          {/* ── 7. WHY CHOOSE US ── */}
-          <WhyChooseUs />
 
           {/* ── 8. CTA (Conversion) ── */}
           <CTASection />

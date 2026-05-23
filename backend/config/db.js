@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
@@ -7,15 +8,22 @@ import bcrypt from "bcryptjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.resolve(__dirname, "../data");
-fs.mkdirSync(dataDir, { recursive: true });
 
-const databaseUrl = process.env.DATABASE_URL || path.join(dataDir, "admin.sqlite");
+// If running in a OneDrive synced folder, SQLite throws "disk I/O error" due to cloud sync locks.
+// In that case, we fall back to the user's home directory.
+const isOneDrive = __dirname.toLowerCase().includes("onedrive");
+const defaultDbPath = isOneDrive
+  ? path.join(os.homedir(), ".karyo", "admin.sqlite")
+  : path.join(dataDir, "admin.sqlite");
+
+const databaseUrl = process.env.DATABASE_URL || defaultDbPath;
 const rawDatabasePath = databaseUrl.startsWith("sqlite://")
   ? databaseUrl.replace("sqlite://", "")
   : databaseUrl;
 const databasePath = path.isAbsolute(rawDatabasePath)
   ? rawDatabasePath
   : path.resolve(__dirname, "../..", rawDatabasePath);
+
 fs.mkdirSync(path.dirname(databasePath), { recursive: true });
 
 export const db = new DatabaseSync(databasePath);

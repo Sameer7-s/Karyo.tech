@@ -70,8 +70,7 @@ export function Navbar() {
                                         className="relative text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 group-hover:text-white transition-colors duration-500 cursor-pointer block"
                                     >
                                         {link.name}
-                                        <span className="absolute -bottom-1.5 left-0 w-0 h-[1px] bg-white/70 transition-all duration-500 group-hover:w-full rounded-full" />
-                                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-60 transition-all duration-500 scale-0 group-hover:scale-100" />
+                                        <span className="absolute -bottom-1.5 left-0 w-0 h-[1px] bg-white transition-all duration-500 group-hover:w-full" />
                                     </motion.div>
                                 </Link>
                             ))}
@@ -88,10 +87,9 @@ export function Navbar() {
                                 transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                className="relative group px-6 py-2.5 rounded-full border border-white/20 bg-white/[0.03] overflow-hidden flex items-center justify-center cursor-pointer"
+                                className="relative group px-6 py-2.5 border border-white/20 bg-transparent overflow-hidden flex items-center justify-center cursor-pointer"
                             >
                                 <div className="absolute inset-0 bg-white translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1]" />
-                                <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 <span className="relative z-10 text-xs font-bold uppercase tracking-[0.2em] text-white group-hover:text-black transition-colors duration-500">
                                     Connect Us
                                 </span>
@@ -168,7 +166,7 @@ export function Navbar() {
                             <Link
                                 to="/contact"
                                 onClick={() => setMenuOpen(false)}
-                                className="px-10 py-4 rounded-full border border-white/20 bg-white text-black font-bold text-sm uppercase tracking-[0.2em] active:scale-95 transition-transform"
+                                className="px-10 py-4 border border-white bg-white text-black font-bold text-sm uppercase tracking-[0.2em] active:scale-95 transition-transform"
                             >
                                 Connect Us
                             </Link>

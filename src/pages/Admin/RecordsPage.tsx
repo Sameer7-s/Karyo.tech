@@ -139,7 +139,7 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
             <button onClick={load} className="rounded-md border border-white/10 p-2 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Refresh">
               <RefreshCw className="h-4 w-4" />
             </button>
-            <button onClick={() => exportCsv(config.csvName, rows)} className="inline-flex items-center gap-2 rounded-md bg-[#9D80CB] px-3 py-2 text-sm font-semibold text-white hover:bg-[#b095d7]">
+            <button onClick={() => exportCsv(config.csvName, rows)} className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-black hover:bg-gray-200">
               <Download className="h-4 w-4" />
               Export CSV
             </button>

@@ -1,11 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Audiowide&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Syne", sans-serif;
-  --font-orbitron: "Orbitron", sans-serif;
-  --font-exo: "Exo 2", sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-orbitron: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-syne: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ===== Color Tokens ===== */
+:root {
+  --bg: #000000;
+  --card: #0B0B0B;
+  --card-2: #111111;
+  --border: rgba(255,255,255,0.10);
+  --border-hover: rgba(255,255,255,0.24);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255,255,255,0.65);
+  --text-muted: rgba(255,255,255,0.45);
+  --btn-bg: #FFFFFF;
+  --btn-text: #000000;
+  --danger: #EF4444;
+  --success: #22C55E;
 }
 
 /* ===== Base Styles ===== */
@@ -18,10 +34,15 @@
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
 }
 
 /* ===== Lenis Scroll Config ===== */
-/* Lenis manages all scroll — native snap disabled entirely */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -31,22 +52,23 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
-/* ===== Liquid Gradient ===== */
-@keyframes liquid-flow {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* ===== Blink Animation ===== */
+@keyframes blink-flicker {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.4; }
+  6% { opacity: 1; }
+  7% { opacity: 0.4; }
+  8% { opacity: 1; }
+  9% { opacity: 1; }
+  10% { opacity: 0; }
+  11% { opacity: 1; }
+  50% { opacity: 1; }
+  52% { opacity: 0.8; }
+  53% { opacity: 1; }
 }
 
-.animate-liquid {
-  background: linear-gradient(135deg, #0ea5e9, #10b981, #14b8a6, #2dd4bf, #0ea5e9);
-  background-size: 300% 300%;
-  animation: liquid-flow 12s ease-in-out infinite;
-  will-change: background-position;
-}
-
-.animate-liquid-fast {
-  animation: liquid-flow 4s ease-in-out infinite;
+.animate-blink {
+  animation: blink-flicker 5s infinite;
 }
 
 /* ===== Marquee — GPU accelerated ===== */
@@ -62,10 +84,10 @@ html.lenis body {
 }
 
 /* ===== Premium Scrollbar ===== */
-::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: #000; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
 
 /* ===== GPU-accelerated utility ===== */
 .gpu-accelerated {
@@ -74,90 +96,108 @@ html.lenis body {
   backface-visibility: hidden;
 }
 
-/* ===== Futuristic Design Tokens ===== */
-:root {
-  --accent-blue: #00BFFF;
-  --bg-deep: #050505;
+/* ===== Card / Glass Styles ===== */
+.card-dark {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 
-.glass-dark {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.card-dark:hover {
+  border-color: var(--border-hover);
 }
 
-.glow-blue {
-  box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
+/* ===== Button Styles ===== */
+.btn-primary {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 150ms ease, transform 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* ===== Premium Text Shimmer ===== */
-@keyframes gradient-sweep {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.animate-gradient-sweep {
-  animation: gradient-sweep 7s linear infinite;
-  will-change: background-position;
+.btn-ghost:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
 }
 
-/* ===== Reduced Motion — disable heavy animations ===== */
-@media (prefers-reduced-motion: reduce) {
-  .animate-marquee,
-  .animate-liquid,
-  .animate-liquid-fast,
-  .animate-gradient-sweep {
-    animation: none !important;
-  }
-
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
+/* ===== Admin form inputs ===== */
+.admin-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 150ms ease;
 }
 
-/* ===== Mobile Performance ===== */
-@media (max-width: 768px) {
-  .animate-marquee {
-    animation-duration: 60s;
-  }
-
-  .glass-dark {
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-  }
+.admin-input:focus {
+  border-color: rgba(255,255,255,0.35);
 }
 
-/* ===== Luxury Lovable Component Additions ===== */
-.bg-gradient-soft {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+/* ===== Admin select ===== */
+.admin-select {
+  background: #0B0B0B;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  outline: none;
+  cursor: pointer;
 }
-.bg-gradient-luxe {
-  background: linear-gradient(135deg, #dfc2a1, #e6d3ba, #d4b08c);
+
+/* ===== Section reveal animation ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.text-gradient {
-  background: linear-gradient(135deg, #dfc2a1, #e6d3ba, #d4b08c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+
+.fade-up {
+  animation: fadeUp 0.5s ease forwards;
 }
-.shadow-luxe {
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 10px 20px -5px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-.shadow-glow {
-  box-shadow: 0 0 20px rgba(223, 194, 161, 0.4);
-}
-.shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite linear;
-}
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+
+/* ===== Status badge ===== */
+.badge-new    { background: rgba(255,255,255,0.1); color: #fff; }
+.badge-read   { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.55); }
+.badge-success { background: rgba(34,197,94,0.15); color: #4ade80; }
+.badge-danger  { background: rgba(239,68,68,0.15); color: #f87171; }
+
+/* ===== Underline hover ===== */
 .underline-grow {
   position: relative;
 }
@@ -176,4 +216,17 @@ html.lenis body {
 .underline-grow:hover::after {
   transform: scaleX(1);
   transform-origin: bottom left;
+}
+
+/* ===== Admin surface override (login page body class) ===== */
+body.admin-surface {
+  background: #000;
+}
+
+
+/* ===== Mobile Performance ===== */
+@media (max-width: 768px) {
+  .animate-marquee {
+    animation-duration: 60s;
+  }
 }

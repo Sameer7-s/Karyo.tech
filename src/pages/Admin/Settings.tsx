@@ -61,7 +61,7 @@ export default function Settings() {
             <span className="mb-2 block text-sm text-white/60">Name</span>
             <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none focus:border-[#9D80CB]" />
           </label>
-          <button disabled={saving} className="rounded-md bg-[#9D80CB] px-4 py-2 text-sm font-semibold text-white hover:bg-[#b095d7] disabled:opacity-60">Update profile</button>
+          <button disabled={saving} className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-gray-200 disabled:opacity-60">Update profile</button>
         </form>
       </div>
 
@@ -77,7 +77,7 @@ export default function Settings() {
             <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none focus:border-[#9D80CB]" />
           </label>
           <div className="flex flex-wrap gap-3">
-            <button disabled={saving} className="rounded-md bg-[#9D80CB] px-4 py-2 text-sm font-semibold text-white hover:bg-[#b095d7] disabled:opacity-60">Change password</button>
+            <button disabled={saving} className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-gray-200 disabled:opacity-60">Change password</button>
             <button type="button" onClick={handleLogout} className="rounded-md border border-rose-400/20 px-4 py-2 text-sm font-semibold text-rose-200 hover:bg-rose-500/10">Logout</button>
           </div>
         </form>

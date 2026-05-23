@@ -23,7 +23,6 @@ export function CTASection() {
 
           <h2
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1.05] text-white mb-8"
-            style={{ fontFamily: "'Syne', sans-serif" }}
           >
             Let's Build Something{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/50">

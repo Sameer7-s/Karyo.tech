@@ -5,7 +5,6 @@ import { Sidebar } from "../../components/admin/Sidebar";
 import { Topbar } from "../../components/admin/Topbar";
 import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../components/common/Toast";
-import { LoginBackground } from "./LoginBackground";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
@@ -33,7 +32,6 @@ export default function AdminLayout() {
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden bg-black text-white">
-      <LoginBackground />
       <Sidebar open={open} setOpen={setOpen} onLogout={handleLogout} />
       <div className="relative z-10 lg:pl-72">
         <Topbar title={title} onLogout={handleLogout} />

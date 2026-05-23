@@ -44,7 +44,6 @@ export function ProcessSection() {
           </span>
           <h2
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1] text-white"
-            style={{ fontFamily: "'Syne', sans-serif" }}
           >
             Our Process
           </h2>
@@ -87,7 +86,6 @@ export function ProcessSection() {
 
               <h3
                 className="text-2xl md:text-3xl font-semibold tracking-tight text-white/90 mb-4 group-hover:text-white transition-colors duration-500"
-                style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 {step.title}
               </h3>

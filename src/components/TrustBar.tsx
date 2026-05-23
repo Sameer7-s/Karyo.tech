@@ -41,7 +41,6 @@ export function TrustBar() {
             >
               <span
                 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white mb-2"
-                style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 {metric.value}
               </span>

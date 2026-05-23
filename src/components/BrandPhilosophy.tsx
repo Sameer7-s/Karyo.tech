@@ -1,5 +1,4 @@
-import { AnimatedHeadline } from "./AnimatedHeadline";
-
+// Section removed — animated headline text deleted per user request
 export function BrandPhilosophy() {
-  return <AnimatedHeadline />;
+  return null;
 }
