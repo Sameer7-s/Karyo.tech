@@ -92,7 +92,6 @@ export default function Dashboard() {
     </section>
   );
 }
-
 function Panel({ title, items }: { title: string; items: { title: string; meta: string }[] }) {
   return (
     <div className="rounded-lg border border-white/10 bg-[#111827] p-5">
@@ -110,3 +109,4 @@ function Panel({ title, items }: { title: string; items: { title: string; meta: 
     </div>
   );
 }
+
