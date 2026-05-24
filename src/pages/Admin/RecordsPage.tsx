@@ -32,6 +32,8 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search);
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -53,6 +55,8 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
         limit: 10,
         search: debouncedSearch,
         sort,
+        dateFrom,
+        dateTo,
         ...filterParams,
       });
       setRows(response.rows);
@@ -65,7 +69,7 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
     } finally {
       setLoading(false);
     }
-  }, [config.apiPath, debouncedSearch, filterParams, page, showToast, sort]);
+  }, [config.apiPath, dateFrom, dateTo, debouncedSearch, filterParams, page, showToast, sort]);
 
   useEffect(() => {
     load();
@@ -73,7 +77,7 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, filters, sort]);
+  }, [dateFrom, dateTo, debouncedSearch, filters, sort]);
 
   async function patch(path: string, body: unknown) {
     try {
@@ -132,6 +136,20 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
                 {filter.options.map((option) => <option key={option} value={option}>{option}</option>)}
               </select>
             ))}
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(event) => setDateFrom(event.target.value)}
+              className="rounded-md border border-white/10 bg-[#0B0F19] px-3 py-2 text-sm text-white/70 outline-none"
+              aria-label="Filter from date"
+            />
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(event) => setDateTo(event.target.value)}
+              className="rounded-md border border-white/10 bg-[#0B0F19] px-3 py-2 text-sm text-white/70 outline-none"
+              aria-label="Filter to date"
+            />
             <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-md border border-white/10 bg-[#0B0F19] px-3 py-2 text-sm text-white/70 outline-none">
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>

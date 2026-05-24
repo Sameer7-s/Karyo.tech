@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 
 const items = [
   { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Contact Messages", to: "/admin/contacts", icon: Mail },
+  { label: "Leads", to: "/admin/contacts", icon: Mail },
   { label: "Service Requests", to: "/admin/service-requests", icon: MessageSquareText },
   { label: "Project Inquiries", to: "/admin/project-inquiries", icon: FolderKanban },
   { label: "Newsletter", to: "/admin/newsletter", icon: Newspaper },

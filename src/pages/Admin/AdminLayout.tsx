@@ -8,7 +8,7 @@ import { useToast } from "../../components/common/Toast";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
-  "/admin/contacts": "Contact Messages",
+  "/admin/contacts": "Leads",
   "/admin/service-requests": "Service Requests",
   "/admin/project-inquiries": "Project Inquiries",
   "/admin/newsletter": "Newsletter Subscribers",

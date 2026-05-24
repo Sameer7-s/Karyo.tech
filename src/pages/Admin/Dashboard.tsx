@@ -23,7 +23,7 @@ export default function Dashboard() {
   if (!stats) return <EmptyState message="Something went wrong. Please try again." />;
 
   const cards = [
-    { icon: Mail, label: "Total Contacts", value: stats.totalContacts, description: `${stats.newMessages} new messages need attention`, to: "/admin/contacts" },
+    { icon: Mail, label: "Total Leads", value: stats.totalContacts, description: `${stats.newMessages} new leads need attention`, to: "/admin/contacts" },
     { icon: MessageSquareText, label: "Service Requests", value: stats.totalServiceRequests, description: `${stats.pendingRequests} open service conversations`, to: "/admin/service-requests" },
     { icon: FolderKanban, label: "Project Inquiries", value: stats.totalProjectInquiries, description: `${stats.completedProjects} completed project inquiries`, to: "/admin/project-inquiries" },
     { icon: Newspaper, label: "Subscribers", value: stats.totalSubscribers, description: "Newsletter audience stored in database", to: "/admin/newsletter" },
@@ -42,7 +42,7 @@ export default function Dashboard() {
             <p className="mt-3 max-w-xl text-sm leading-6 text-white/50">Live submissions, requests, and activity from the website are ready for review.</p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:flex">
-            <Metric label="New messages" value={stats.newMessages} />
+            <Metric label="New leads" value={stats.newMessages} />
             <Metric label="Pending tasks" value={stats.pendingRequests + stats.newMessages} />
           </div>
         </div>
@@ -79,12 +79,12 @@ export default function Dashboard() {
         </div>
 
         <div className={panelClass}>
-          <h3 className="mb-4 font-orbitron font-semibold uppercase tracking-normal text-white">Service type distribution</h3>
+          <h3 className="mb-4 font-orbitron font-semibold uppercase tracking-normal text-white">Lead status analytics</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.serviceTypeDistribution}>
+              <BarChart data={stats.statusDistribution}>
                 <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgba(255,255,255,0.45)" fontSize={11} interval={0} angle={-18} textAnchor="end" height={72} />
+                <XAxis dataKey="status" stroke="rgba(255,255,255,0.45)" fontSize={11} interval={0} angle={-18} textAnchor="end" height={72} />
                 <YAxis stroke="rgba(255,255,255,0.45)" fontSize={12} allowDecimals={false} />
                 <Tooltip contentStyle={tooltipStyle} />
                 <Bar dataKey="total" fill="rgba(255,255,255,0.82)" radius={[6, 6, 0, 0]} />
@@ -95,9 +95,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <Panel title="Recent contacts" items={stats.recentContacts.map((item) => ({ title: String(item.name), meta: `${item.email} - ${formatDate(String(item.createdAt))}` }))} />
+        <Panel title="Recent leads" items={stats.recentContacts.map((item) => ({ title: String(item.name), meta: `${item.projectType || item.email} - ${formatDate(String(item.createdAt))}` }))} />
         <Panel title="Recent service requests" items={stats.recentServiceRequests.map((item) => ({ title: String(item.fullName), meta: `${item.serviceType} - ${formatDate(String(item.createdAt))}` }))} />
         <Panel title="Recent activity" items={stats.recentActivities.map((item) => ({ title: item.action, meta: `${item.performedBy} - ${formatDate(item.createdAt)}` }))} />
+        <Panel title="Latest messages" items={stats.recentContacts.map((item) => ({ title: String(item.message || item.email), meta: `${item.name} - ${formatDate(String(item.createdAt))}` }))} />
       </div>
     </section>
   );

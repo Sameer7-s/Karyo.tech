@@ -2,21 +2,25 @@ import { RecordsPage } from "./RecordsPage";
 
 export default function Contacts() {
   return <RecordsPage config={{
-    title: "Contact Messages",
+    title: "Leads",
     apiPath: "/admin/contacts",
     deletePath: (id) => `/admin/contacts/${id}`,
     columns: [
       { key: "name", label: "Name" },
       { key: "email", label: "Email" },
       { key: "phone", label: "Phone" },
-      { key: "subject", label: "Subject" },
+      { key: "company", label: "Company" },
+      { key: "projectType", label: "Project Type" },
       { key: "status", label: "Status", type: "status" },
       { key: "createdAt", label: "Date", type: "date" },
     ],
-    searchPlaceholder: "Search name, email, subject",
-    filters: [{ key: "status", label: "Status", options: ["New", "Viewed", "Replied", "Closed"] }],
-    statusOptions: ["New", "Viewed", "Replied", "Closed"],
+    searchPlaceholder: "Search name, email, phone, company",
+    filters: [
+      { key: "status", label: "Status", options: ["new", "contacted", "closed"] },
+      { key: "projectType", label: "Project Type", options: ["AI Automation", "AI Chatbot", "Workflow Automation", "Custom AI System"] },
+    ],
+    statusOptions: ["new", "contacted", "closed"],
     statusPath: (id) => `/admin/contacts/${id}/status`,
-    csvName: "contact-messages.csv",
+    csvName: "karyo-leads.csv",
   }} />;
 }

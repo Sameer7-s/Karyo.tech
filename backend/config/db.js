@@ -59,9 +59,12 @@ function createTables() {
       name TEXT NOT NULL,
       email TEXT NOT NULL,
       phone TEXT,
+      countryCode TEXT,
+      company TEXT,
+      projectType TEXT,
       subject TEXT,
       message TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'New',
+      status TEXT NOT NULL DEFAULT 'new',
       source TEXT NOT NULL DEFAULT 'Contact Page',
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
@@ -127,11 +130,41 @@ function createTables() {
     );
 
     CREATE INDEX IF NOT EXISTS idx_contact_created ON contact_messages(createdAt);
+    CREATE INDEX IF NOT EXISTS idx_contact_email ON contact_messages(email);
+    CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);
+    CREATE INDEX IF NOT EXISTS idx_contact_project_type ON contact_messages(projectType);
     CREATE INDEX IF NOT EXISTS idx_service_created ON service_requests(createdAt);
     CREATE INDEX IF NOT EXISTS idx_project_created ON project_inquiries(createdAt);
     CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email);
     CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(createdAt);
   `);
+}
+
+function migrateContactLeadColumns() {
+  const columns = db.prepare("PRAGMA table_info(contact_messages)").all();
+  const existing = new Set(columns.map((column) => column.name));
+  const additions = [
+    ["countryCode", "TEXT"],
+    ["company", "TEXT"],
+    ["projectType", "TEXT"],
+  ];
+
+  additions.forEach(([name, definition]) => {
+    if (!existing.has(name)) {
+      db.exec(`ALTER TABLE contact_messages ADD COLUMN ${name} ${definition}`);
+    }
+  });
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_contact_email ON contact_messages(email);
+    CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);
+    CREATE INDEX IF NOT EXISTS idx_contact_project_type ON contact_messages(projectType);
+  `);
+
+  db.prepare("UPDATE contact_messages SET status = 'new' WHERE status = 'New'").run();
+  db.prepare("UPDATE contact_messages SET status = 'contacted' WHERE status IN ('Viewed', 'Replied')").run();
+  db.prepare("UPDATE contact_messages SET status = 'closed' WHERE status = 'Closed'").run();
+  db.prepare("UPDATE contact_messages SET projectType = COALESCE(projectType, subject) WHERE projectType IS NULL OR projectType = ''").run();
 }
 
 function hasExistingSchema() {
@@ -194,6 +227,8 @@ export function initDatabase() {
   if (!schemaExists) {
     createTables();
   }
+
+  migrateContactLeadColumns();
 
   try {
     seedAdmin();

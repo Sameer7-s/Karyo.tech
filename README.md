@@ -26,3 +26,23 @@ View your app in AI Studio: https://ai.studio/apps/0729a59c-1a30-4dc0-a5b7-aeddb
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Contact leads and admin
+
+Run the API server in a second terminal:
+
+```powershell
+npm run dev:server
+```
+
+Contact form submissions are saved through `POST /api/contact` and appear in the admin leads view at `/admin/contacts`.
+
+For production, set these environment variables:
+
+- `VITE_API_URL`: API base URL, for example `https://your-api-host.com/api` or `/api` when frontend and backend share an origin.
+- `MONGODB_URI`, `MONGODB_DB`: MongoDB Atlas connection for permanent lead storage. When unset, leads use the local SQLite fallback.
+- `DATABASE_URL`: persistent database path for the existing SQLite admin backend. Do not rely on local Vercel filesystem storage for permanent data.
+- `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`: admin authentication settings.
+- `LEAD_NOTIFICATION_EMAIL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: optional email notifications for new leads.
+
+On Vercel, keep `vercel.json` in the project root so React Router pages such as `/admin` resolve to `index.html` on direct visits.

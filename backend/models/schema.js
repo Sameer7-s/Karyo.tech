@@ -9,7 +9,7 @@ export const tables = {
 };
 
 export const statuses = {
-  contact: ["New", "Viewed", "Replied", "Closed"],
+  contact: ["new", "contacted", "closed"],
   request: ["New", "In Review", "Contacted", "In Progress", "Completed", "Rejected"],
   project: ["New", "In Review", "Contacted", "In Progress", "Completed", "Rejected"],
   newsletter: ["Active", "Unsubscribed"],

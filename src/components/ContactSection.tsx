@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Mail, MapPin, Linkedin, Twitter, Calendar, ChevronDown, ArrowRight } from "lucide-react";
-import { submitContact, apiRequest } from "../api/adminApi";
+import { Mail, Phone, Linkedin, Twitter, Calendar, ChevronDown, ArrowRight } from "lucide-react";
+import { submitContact } from "../api/adminApi";
 import { useToast } from "./common/Toast";
+import { PhoneNumberInput } from "./PhoneNumberInput";
+import { WhatsAppButton } from "./WhatsAppButton";
+import { emailHref, KARYO_EMAIL, KARYO_PHONE_DISPLAY, phoneHref } from "../constants/contact";
 
 /* ── B&W ContactSection ── */
 export function ContactSection() {
@@ -13,6 +16,8 @@ export function ContactSection() {
     const [form, setForm] = useState({
         name: "",
         email: "",
+        phone: "",
+        countryCode: "+91",
         company: "",
         message: "",
     });
@@ -40,8 +45,13 @@ export function ContactSection() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-            showToast("Name, email, and message are required", "error");
+        if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.message.trim()) {
+            showToast("Name, email, phone, and message are required", "error");
+            return;
+        }
+
+        if (form.phone.replace(/\D/g, "").length < 8) {
+            showToast("Please enter a valid phone number", "error");
             return;
         }
 
@@ -50,25 +60,17 @@ export function ContactSection() {
             await submitContact({
                 name: form.name,
                 email: form.email,
-                subject: selectedType,
+                phone: form.phone,
+                countryCode: form.countryCode,
+                company: form.company,
+                projectType: selectedType,
                 message: form.message,
                 source: "Contact Page",
             });
 
-            await apiRequest("/service-request", {
-                method: "POST",
-                body: JSON.stringify({
-                    fullName: form.name,
-                    email: form.email,
-                    companyName: form.company,
-                    serviceType: selectedType,
-                    requirementDetails: form.message,
-                }),
-            });
-
-            setForm({ name: "", email: "", company: "", message: "" });
+            setForm({ name: "", email: "", phone: "", countryCode: "+91", company: "", message: "" });
             setSelectedType("AI Automation");
-            showToast("Data saved successfully. We will get back to you soon.", "success");
+            showToast("Lead submitted successfully. We will get back to you soon.", "success");
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
         } finally {
@@ -143,25 +145,25 @@ export function ContactSection() {
                         </p>
 
                         <div className="space-y-8 flex-1">
-                            <div className="flex items-start gap-4 group cursor-pointer">
+                            <a href={emailHref} className="flex items-start gap-4 group">
                                 <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02] group-hover:bg-white/[0.06] group-hover:border-white/25 transition-all duration-300">
                                     <Mail className="w-5 h-5 text-white/40 group-hover:text-white/90 transition-colors duration-300" />
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Email</p>
-                                    <p className="text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300">hello@agency.com</p>
+                                    <p className="text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300">{KARYO_EMAIL}</p>
                                 </div>
-                            </div>
+                            </a>
 
-                            <div className="flex items-start gap-4 group cursor-pointer">
+                            <a href={phoneHref} className="flex items-start gap-4 group">
                                 <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02] group-hover:bg-white/[0.06] group-hover:border-white/25 transition-all duration-300">
-                                    <MapPin className="w-5 h-5 text-white/40 group-hover:text-white/90 transition-colors duration-300" />
+                                    <Phone className="w-5 h-5 text-white/40 group-hover:text-white/90 transition-colors duration-300" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Location</p>
-                                    <p className="text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300">Remote / Global</p>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Phone</p>
+                                    <p className="text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300">{KARYO_PHONE_DISPLAY}</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
 
                         {/* Social & Booking Links */}
@@ -172,7 +174,8 @@ export function ContactSection() {
                             <a href="#" className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300 text-sm font-medium text-white/70 hover:text-white">
                                 <Twitter className="w-4 h-4" /> Twitter
                             </a>
-                            <a href="#" className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.09] transition-all duration-300 text-sm font-medium text-white/80 hover:text-white group">
+                            <WhatsAppButton />
+                            <a href={phoneHref} className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.09] hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium text-white/80 hover:text-white group">
                                 <Calendar className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" /> Book a Free Strategy Call
                             </a>
                         </div>
@@ -228,24 +231,43 @@ export function ContactSection() {
                                 </div>
                             </div>
 
-                            {/* Company Input */}
-                            <div className="relative group mb-6">
-                                <motion.label
-                                    animate={{ y: focusedField === 'company' ? -5 : 0, opacity: focusedField === 'company' ? 1 : 0.5 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute -top-3 left-4 bg-black px-2 text-xs font-bold uppercase tracking-wider z-10 text-white/60"
-                                >
-                                    Company
-                                </motion.label>
-                                <input
-                                    type="text"
-                                    value={form.company}
-                                    onChange={(event) => updateField("company", event.target.value)}
-                                    onFocus={() => setFocusedField('company')}
-                                    onBlur={() => setFocusedField(null)}
-                                    placeholder="Company Name"
-                                    className={inputClasses('company')}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                {/* Phone Input */}
+                                <div className="relative group">
+                                    <motion.label
+                                        animate={{ y: focusedField === 'phone' ? -5 : 0, opacity: focusedField === 'phone' ? 1 : 0.5 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute -top-3 left-4 bg-black px-2 text-xs font-bold uppercase tracking-wider z-20 text-white/60"
+                                    >
+                                        Phone
+                                    </motion.label>
+                                    <PhoneNumberInput
+                                        value={form.phone}
+                                        onChange={(phone, countryCode) => setForm((current) => ({ ...current, phone, countryCode }))}
+                                        onFocus={() => setFocusedField('phone')}
+                                        onBlur={() => setFocusedField(null)}
+                                    />
+                                </div>
+
+                                {/* Company Input */}
+                                <div className="relative group">
+                                    <motion.label
+                                        animate={{ y: focusedField === 'company' ? -5 : 0, opacity: focusedField === 'company' ? 1 : 0.5 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute -top-3 left-4 bg-black px-2 text-xs font-bold uppercase tracking-wider z-10 text-white/60"
+                                    >
+                                        Company
+                                    </motion.label>
+                                    <input
+                                        type="text"
+                                        value={form.company}
+                                        onChange={(event) => updateField("company", event.target.value)}
+                                        onFocus={() => setFocusedField('company')}
+                                        onBlur={() => setFocusedField(null)}
+                                        placeholder="Company Name"
+                                        className={inputClasses('company')}
+                                    />
+                                </div>
                             </div>
 
                             {/* Project Type Dropdown */}
@@ -326,7 +348,7 @@ export function ContactSection() {
                                 whileHover={{ scale: 1.015 }}
                                 whileTap={{ scale: 0.985 }}
                                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                                className="w-full relative group overflow-hidden rounded-xl bg-white text-black font-bold text-lg py-5 flex items-center justify-center gap-3 transition-colors duration-500 hover:text-white"
+                                className="w-full relative group overflow-hidden rounded-xl bg-white text-black font-bold text-lg py-5 flex items-center justify-center gap-3 transition-colors duration-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
                                 type="submit"
                                 disabled={loading}
                             >

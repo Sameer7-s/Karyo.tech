@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "motion/react";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 export function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -161,7 +162,7 @@ export function Navbar() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                            className="mt-12"
+                            className="mt-12 flex flex-col items-center gap-4"
                         >
                             <Link
                                 to="/contact"
@@ -170,6 +171,7 @@ export function Navbar() {
                             >
                                 Connect Us
                             </Link>
+                            <WhatsAppButton onClick={() => setMenuOpen(false)} className="px-10 py-4" />
                         </motion.div>
                     </motion.div>
                 )}
