@@ -5,7 +5,7 @@ import { submitContact } from "../api/adminApi";
 import { useToast } from "./common/Toast";
 import { PhoneNumberInput } from "./PhoneNumberInput";
 import { WhatsAppButton } from "./WhatsAppButton";
-import { emailHref, KARYO_EMAIL, KARYO_PHONE_DISPLAY, phoneHref } from "../constants/contact";
+import { emailHref, KARYO_EMAIL, KARYO_PHONES, phoneHref } from "../constants/contact";
 
 /* ── B&W ContactSection ── */
 export function ContactSection() {
@@ -155,15 +155,25 @@ export function ContactSection() {
                                 </div>
                             </a>
 
-                            <a href={phoneHref} className="flex items-start gap-4 group">
-                                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02] group-hover:bg-white/[0.06] group-hover:border-white/25 transition-all duration-300">
-                                    <Phone className="w-5 h-5 text-white/40 group-hover:text-white/90 transition-colors duration-300" />
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 shrink-0 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02]">
+                                    <Phone className="w-5 h-5 text-white/40" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-1">Phone</p>
-                                    <p className="text-lg font-medium text-white/80 group-hover:text-white transition-colors duration-300">{KARYO_PHONE_DISPLAY}</p>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Phone</p>
+                                    <div className="flex flex-col gap-1.5">
+                                        {KARYO_PHONES.map((phone) => (
+                                            <a
+                                                key={phone.tel}
+                                                href={`tel:${phone.tel}`}
+                                                className="text-lg font-medium text-white/80 hover:text-white transition-colors duration-300 w-fit"
+                                            >
+                                                {phone.display}
+                                            </a>
+                                        ))}
+                                    </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
 
                         {/* Social & Booking Links */}

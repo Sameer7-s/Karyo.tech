@@ -19,9 +19,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           alt={project.imageAlt}
           loading="lazy"
           decoding="async"
-          className={`h-full w-full object-cover transition-transform duration-700 ${
-            isLive ? "group-hover:scale-105" : "opacity-80"
-          }`}
+          className="h-full w-full object-cover object-top will-change-transform transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
           referrerPolicy="no-referrer"
         />
       </div>

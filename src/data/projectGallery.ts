@@ -22,15 +22,14 @@ export const projectGalleryItems: GalleryProject[] = [
     liveUrl: "https://karyo-tech-gcd8.vercel.app",
   },
   {
-    title: "FlowSync",
-    typeTag: "Workflow System",
+    title: "HUNT AI",
+    typeTag: "CVE Hunter",
     year: "2025",
     description:
-      "Enterprise automation dashboard connecting APIs, CRM systems, and AI agents into one operational workflow.",
+      "AI-powered firmware vulnerability scanner that analyzes firmware components, detects versions, and maps them against CVE intelligence.",
     actionText: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format&fit=crop",
-    imageAlt: "FlowSync workflow system preview",
+    image: "/assets/hunt-ai-preview.png",
+    imageAlt: "HUNT AI CVE Hunter preview",
   },
   {
     title: "Kairo AI",
