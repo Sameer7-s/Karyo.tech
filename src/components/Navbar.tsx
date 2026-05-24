@@ -54,7 +54,7 @@ export function Navbar() {
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.8 }}
                             >
-                                KARYO<span className="text-[10px] align-super ml-0.5 opacity-50 group-hover:opacity-100 transition-opacity">®</span>
+                                KARYO
                             </motion.span>
                         </Link>
                     </div>
@@ -81,7 +81,7 @@ export function Navbar() {
                     {/* RIGHT — Desktop Connect Button + Mobile Hamburger */}
                     <div className="flex items-center gap-4">
                         {/* Desktop Connect Button */}
-                        <Link to="/contact" className="hidden md:block">
+                        <Link to="/contact" className="hidden md:block relative z-10">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}

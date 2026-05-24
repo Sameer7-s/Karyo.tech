@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function CTASection() {
   return (
@@ -35,19 +36,20 @@ export function CTASection() {
             brand overhaul — we're ready to make it happen.
           </p>
 
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-white text-black font-bold text-base md:text-lg overflow-hidden transition-colors duration-500 hover:text-white"
-          >
-            <span className="absolute inset-0 w-full h-full bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
-            <span className="relative z-10 flex items-center gap-3">
-              Let's Work Together
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </span>
-          </motion.a>
+          <Link to="/contact" className="inline-block w-full sm:w-auto">
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 rounded-full bg-white text-black font-bold text-base md:text-lg overflow-hidden transition-colors duration-500 hover:text-white cursor-pointer"
+            >
+              <span className="absolute inset-0 w-full h-full bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
+              <span className="relative z-10 flex items-center gap-3">
+                Let&apos;s Work Together
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </motion.div>
+          </Link>
         </motion.div>
       </div>
     </section>

@@ -248,6 +248,38 @@ body.admin-surface {
   width: calc(100% - 16px) !important;
 }
 
+/* ===== Studio Footer — cinematic luxury ===== */
+.studio-footer {
+  background-color: #000000;
+}
+
+.studio-footer-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+.footer-logo-wrap {
+  position: relative;
+  background: #000;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.footer-logo-wrap::before,
+.footer-logo-wrap::after {
+  display: none !important;
+  content: none !important;
+}
+
+.footer-logo-text {
+  color: #fff;
+  text-shadow: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
 /* ===== Mobile Performance ===== */
 @media (max-width: 768px) {
   .animate-marquee {

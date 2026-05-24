@@ -7,6 +7,7 @@ import {
   useScroll,
   useInView,
 } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { StudioFooter } from "./StudioFooter";
 
@@ -648,6 +649,7 @@ function ValuesSection() {
    5. CTA — MAGNETIC BUTTON
 ═══════════════════════════════════════════ */
 function MagneticButton({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -675,6 +677,8 @@ function MagneticButton({ children }: { children: React.ReactNode }) {
   return (
     <motion.button
       ref={ref}
+      type="button"
+      onClick={() => navigate("/contact")}
       onMouseMove={onMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={onMouseLeave}

@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, useMotionValue, useSpring, AnimatePresence, useScroll } from "motion/react";
-import React, { useEffect, useState, useRef } from "react";
-import { Plus } from "lucide-react";
+import { motion, useMotionValue, useSpring, useScroll } from "motion/react";
+import React, { useEffect, useRef } from "react";
 import { Intro } from "./components/Intro";
 import { TrustBar } from "./components/TrustBar";
 import { ServicesShowcase } from "./components/ServicesShowcase";
@@ -14,6 +13,7 @@ import { Navbar } from "./components/Navbar";
 import { CTASection } from "./components/CTASection";
 import { StudioFooter } from "./components/StudioFooter";
 import { GalaxyBackground } from "./components/GalaxyBackground";
+import { FAQSection } from "./components/FAQSection";
 
 /* ─────────────────────────────────────────
    Gallery Works Data & Component
@@ -58,127 +58,6 @@ function GalleryItem({ index }: { index: number; [key: string]: any }) {
         />
       </div>
     </motion.div>
-  );
-}
-
-/* ─────────────────────────────────────────
-   FAQ Section
-───────────────────────────────────────── */
-const faqs = [
-  {
-    question: "What services do you offer?",
-    answer: "We provide comprehensive digital solutions including UI/UX design, full-stack development, brand strategy, and interactive motion design. Our goal is to bridge the gap between creative vision and technical execution."
-  },
-  {
-    question: "What is your typical turnaround time?",
-    answer: "Project timelines vary based on complexity. A typical landing page takes 2-4 weeks, while complex web applications can take 8-12 weeks. We prioritize quality and thorough testing in every sprint."
-  },
-  {
-    question: "Do you only work in Framer?",
-    answer: "While we love Framer for its speed and motion capabilities, we are platform-agnostic. We build custom solutions using React, Next.js, and other modern frameworks depending on the project requirements."
-  },
-  {
-    question: "Can you handle both design and build?",
-    answer: "Yes, we specialize in end-to-end delivery. By handling both design and development, we ensure that the creative intent is perfectly preserved in the final functional product."
-  },
-  {
-    question: "Do you offer brand strategy too?",
-    answer: "Absolutely. We believe great design starts with a strong strategic foundation. We help define your brand voice, positioning, and visual identity before moving into digital execution."
-  },
-  {
-    question: "What's your process like?",
-    answer: "Our process is highly collaborative and iterative. It starts with discovery and strategy, followed by rapid prototyping, high-fidelity design, and finally, robust development and deployment."
-  }
-];
-
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  return (
-    <section className="p-4 sm:p-6 md:p-12 py-16 sm:py-20 md:py-32 bg-black border-t border-white/[0.06] overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-20">
-        <div className="lg:col-span-5 flex flex-col gap-6 md:gap-8 lg:gap-12">
-          <motion.div
-            initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
-            whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-32 md:w-48 aspect-[3/4] rounded-2xl overflow-hidden bg-[#1a1a1a]"
-          >
-            <img
-              src="https://picsum.photos/seed/portrait-faq/600/800"
-              alt="Process Visual"
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover grayscale"
-              referrerPolicy="no-referrer"
-            />
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-white"
-          >
-            Clarifying Deliverable's Before They Begin with Real Process and Honest <span className="font-serif italic opacity-60">Answers.</span>
-          </motion.h2>
-        </div>
-
-        <div className="lg:col-span-7">
-          <div className="border-t border-white/10">
-            {faqs.map((faq, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="border-b border-white/10"
-              >
-                <button
-                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full py-5 md:py-8 flex items-start gap-4 md:gap-8 text-left group relative px-3 md:px-4 -mx-3 md:-mx-4 rounded-xl transition-colors duration-500 hover:bg-white/5"
-                  aria-expanded={openIndex === i}
-                >
-                  <span className="text-[10px] font-bold opacity-40 pt-1.5 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
-                  <div className="flex-1 flex justify-between items-center gap-4">
-                    <span className="text-base sm:text-lg md:text-2xl font-bold tracking-tight group-hover:translate-x-2 transition-transform duration-500">
-                      {faq.question}
-                    </span>
-                    <motion.div
-                      animate={{
-                        rotate: openIndex === i ? 45 : 0,
-                        scale: openIndex === i ? 1.2 : 1
-                      }}
-                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                      className="w-10 h-10 flex-shrink-0 rounded-full border border-white/10 flex items-center justify-center opacity-40 group-hover:opacity-100 group-hover:border-white/30 transition-all"
-                    >
-                      <Plus size={20} strokeWidth={1.5} />
-                    </motion.div>
-                  </div>
-                </button>
-                {/* Use opacity + translateY only — no height animation to avoid layout recalc */}
-                <AnimatePresence initial={false}>
-                  {openIndex === i && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className="pb-6 md:pb-8 pl-6 md:pl-12 pr-4 text-sm md:text-base text-white/60 leading-relaxed max-w-xl"
-                    >
-                      {faq.answer}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
