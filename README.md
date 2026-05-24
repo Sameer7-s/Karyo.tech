@@ -1,48 +1,124 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+# KARYO
+
+# BUILD • AUTOMATE • SCALE
+
+### AI AUTOMATION • WEB ENGINEERING • DIGITAL INFRASTRUCTURE
+
+<img src="https://img.shields.io/badge/STATUS-LIVE-white?style=for-the-badge&labelColor=000000" />
+<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+<img src="https://img.shields.io/badge/TailwindCSS-0F172A?style=for-the-badge&logo=tailwindcss" />
+
 </div>
 
-# Run and deploy your AI Studio app
+---
 
-This contains everything you need to run your app locally.
+# OVERVIEW
 
-View your app in AI Studio: https://ai.studio/apps/0729a59c-1a30-4dc0-a5b7-aeddbca81f48
+KARYO is a futuristic AI automation & web engineering studio focused on building:
 
-## Run Locally
+- AI Systems
+- Workflow Automations
+- SaaS Platforms
+- Enterprise Dashboards
+- Intelligent Digital Experiences
 
-**Prerequisites:** Node.js
+Built with a cinematic minimal design inspired by:
 
-## Recommended Tools
+- OpenAI
+- Vercel
+- Linear
+- Stripe
+- Framer
 
-- **Claude for Desktop:** For a better experience, you can install Claude for Desktop.
-  ```powershell
-  irm https://claude.ai/install.ps1 | iex
-  ```
-  Or run: `npm run install:claude`
+---
 
+# FEATURES
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+✦ Cinematic UI  
+✦ Smooth Animations  
+✦ Responsive Design  
+✦ Interactive Motion Effects  
+✦ AI Systems Showcase  
+✦ Premium Dark Aesthetic  
+✦ Modern Footer Experience  
+✦ Enterprise-style FAQ Section  
 
-## Contact leads and admin
+---
 
-Run the API server in a second terminal:
+# TECH STACK
 
-```powershell
-npm run dev:server
+```bash
+React
+Vite
+Tailwind CSS
+Framer Motion
+JavaScript
 ```
 
-Contact form submissions are saved through `POST /api/contact` and appear in the admin leads view at `/admin/contacts`.
+---
 
-For production, set these environment variables:
+# PROJECT STRUCTURE
 
-- `VITE_API_URL`: API base URL, for example `https://your-api-host.com/api` or `/api` when frontend and backend share an origin.
-- `MONGODB_URI`, `MONGODB_DB`: MongoDB Atlas connection for permanent lead storage. When unset, leads use the local SQLite fallback.
-- `DATABASE_URL`: persistent database path for the existing SQLite admin backend. Do not rely on local Vercel filesystem storage for permanent data.
-- `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`: admin authentication settings.
-- `LEAD_NOTIFICATION_EMAIL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: optional email notifications for new leads.
+```bash
+KARYO/
+│
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── sections/
+│   ├── pages/
+│   └── App.jsx
+│
+├── package.json
+└── README.md
+```
 
-On Vercel, keep `vercel.json` in the project root so React Router pages such as `/admin` resolve to `index.html` on direct visits.
+---
+
+# INSTALLATION
+
+```bash
+git clone https://github.com/your-username/karyo.git
+
+cd karyo
+
+npm install
+
+npm run dev
+```
+
+---
+
+# SELECTED SYSTEMS
+
+### Kairo AI
+AI workflow automation platform
+
+### FlowSync
+Enterprise workflow orchestration system
+
+---
+
+# PHILOSOPHY
+
+KARYO is designed to feel like:
+
+- A premium AI systems company
+- A futuristic engineering studio
+- A modern SaaS infrastructure brand
+
+---
+
+<div align="center">
+
+# KARYO
+
+### ENGINEERING INTELLIGENT DIGITAL SYSTEMS
+
+© 2026 KARYO
+
+</div>
