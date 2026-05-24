@@ -49,6 +49,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api/admin", adminDashboardRoutes);
+app.use("/api", adminDashboardRoutes);
 app.use("/api", contactRoutes);
 app.use("/api", serviceRequestRoutes);
 app.use("/api", projectInquiryRoutes);

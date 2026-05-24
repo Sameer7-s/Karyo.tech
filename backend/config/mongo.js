@@ -12,8 +12,14 @@ export async function connectMongo() {
   if (!connectionPromise) {
     connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
       dbName: process.env.MONGODB_DB || "karyo",
+      serverSelectionTimeoutMS: 10000,
     });
   }
-  await connectionPromise;
+  try {
+    await connectionPromise;
+  } catch (error) {
+    connectionPromise = null;
+    throw error;
+  }
   return mongoose.connection;
 }

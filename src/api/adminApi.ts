@@ -112,6 +112,11 @@ export type AdminUser = {
 };
 
 export type DashboardStats = {
+  totalLeads: number;
+  newLeads: number;
+  contactedLeads: number;
+  closedLeads: number;
+  recentLeads: AdminRecord[];
   totalContacts: number;
   totalServiceRequests: number;
   totalProjectInquiries: number;
