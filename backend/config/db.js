@@ -228,7 +228,12 @@ export function initDatabase() {
     createTables();
   }
 
-  migrateContactLeadColumns();
+  try {
+    migrateContactLeadColumns();
+  } catch (error) {
+    if (!process.env.MONGODB_URI) throw error;
+    console.warn("Contact lead SQLite migration skipped. MongoDB lead storage will be used.");
+  }
 
   try {
     seedAdmin();

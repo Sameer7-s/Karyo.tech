@@ -13,6 +13,7 @@ const contactLimiter = rateLimit({
 });
 
 router.post("/contact", contactLimiter, createContact);
+router.get("/leads", protectAdmin, listContacts);
 router.get("/admin/contacts", protectAdmin, listContacts);
 router.get("/admin/contacts/:id", protectAdmin, getContact);
 router.patch("/admin/contacts/:id/status", protectAdmin, updateContactStatus);

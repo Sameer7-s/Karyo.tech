@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
+    "start": "node backend/server.js",
     "server": "node backend/server.js",
     "dev:server": "node --watch backend/server.js",
     "build": "vite build",
