@@ -7,6 +7,7 @@ import App from './App.tsx';
 import { AboutExperience } from './components/AboutExperience';
 import { WorkPage } from './components/WorkPage';
 import { ContactPage } from './components/ContactPage';
+import KaryoProjectPage from './pages/work/KaryoProjectPage';
 import { CustomCursor } from './components/CustomCursor';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './hooks/useAuth';
@@ -79,6 +80,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/" element={<App />} />
               <Route path="/about" element={<AboutExperience />} />
               <Route path="/work" element={<WorkPage />} />
+              <Route path="/work/karyo" element={<KaryoProjectPage />} />
               <Route path="/projects" element={<WorkPage />} />
               <Route path="/services" element={<App />} />
               <Route path="/contact" element={<ContactPage />} />
