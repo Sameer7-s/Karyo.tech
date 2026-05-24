@@ -17,7 +17,7 @@ function Letter({ char }: { char: string; [key: string]: any }) {
                     transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
                 }
             }}
-            className="inline-block text-white opacity-95"
+            className="inline-block shrink-0 text-white opacity-95"
         >
             {char}
         </motion.span>
@@ -99,7 +99,7 @@ export function Intro({ scrollProgress, smoothX, smoothY }: IntroProps) {
                                 transition: { staggerChildren: 0.08, delayChildren: 0.4 }
                             }
                         }}
-                        className="text-[25vw] sm:text-[22vw] md:text-[20vw] lg:text-[18vw] font-black font-orbitron tracking-tighter leading-[0.8] uppercase select-none relative max-w-full overflow-hidden animate-blink"
+                        className="flex flex-nowrap justify-center whitespace-nowrap text-[17vw] sm:text-[19vw] md:text-[20vw] lg:text-[18vw] font-black font-orbitron tracking-tighter leading-[0.8] uppercase select-none relative w-full max-w-full overflow-hidden animate-blink"
                     >
                         {titleLetters.map((char, i) => (
                             <Letter key={i} char={char} />

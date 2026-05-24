@@ -59,25 +59,25 @@ export function StudioFooter() {
   return (
     <footer
       ref={sectionRef}
-      className="bg-black text-white pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-0 font-sans selection:bg-white selection:text-black border-t border-white/5 relative overflow-hidden"
+      className="w-full bg-black text-white pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-0 font-sans selection:bg-white selection:text-black border-t border-white/5 relative overflow-hidden"
     >
       <div className="max-w-[1800px] mx-auto relative z-10 px-4 sm:px-6 md:px-12 lg:px-20">
 
         {/* ═══════════════════════════════════════════
             SOCIAL + LEGAL + LOCATIONS GRID
         ═══════════════════════════════════════════ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 md:gap-16 mb-8 md:mb-12">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-12 md:gap-16">
           {/* Social — left */}
           <div className="md:col-span-4 lg:col-span-3">
             <motion.span
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-5 md:mb-8"
             >
               Social
             </motion.span>
-            <div className="flex flex-wrap items-center gap-6 md:gap-8">
+            <div className="flex flex-wrap items-center gap-4 md:gap-8">
               {socialIcons.map((s, i) => (
                 <motion.a
                   key={s.label}
@@ -109,7 +109,7 @@ export function StudioFooter() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-5 md:mb-8"
             >
               Legal
             </motion.span>
@@ -124,7 +124,7 @@ export function StudioFooter() {
                   transition: { staggerChildren: 0.1, delayChildren: 0.2 },
                 },
               }}
-              className="flex flex-col gap-6"
+              className="flex flex-col gap-4 md:gap-6"
             >
               {["Privacy Policy", "Terms of Service"].map((legal) => (
                 <motion.a
@@ -153,7 +153,7 @@ export function StudioFooter() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-5 md:mb-8"
             >
               Where We're Available
             </motion.span>
@@ -168,7 +168,7 @@ export function StudioFooter() {
                   transition: { staggerChildren: 0.12, delayChildren: 0.25 },
                 },
               }}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-4 md:gap-5"
             >
               {["Bangalore", "Hyderabad", "Uttar Pradesh"].map((location) => (
                 <motion.div
@@ -212,7 +212,7 @@ export function StudioFooter() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-8"
+              className="text-[10px] font-bold tracking-widest uppercase opacity-40 block mb-5 md:mb-8"
             >
               Navigation
             </motion.span>
@@ -227,7 +227,7 @@ export function StudioFooter() {
                   transition: { staggerChildren: 0.1, delayChildren: 0.35 },
                 },
               }}
-              className="flex flex-col gap-6"
+              className="flex flex-col gap-4 md:gap-6"
             >
               {navLinks.map((link) => (
                 <motion.div
@@ -253,13 +253,12 @@ export function StudioFooter() {
             </motion.div>
           </div>
         </div>
-      </div>
 
-      {/* ═══════════════════════════════════════════
-          BIG LOGO SECTION
-      ═══════════════════════════════════════════ */}
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 md:px-12 lg:px-20 mb-10 w-full relative z-10 overflow-hidden">
-        <h2 className="text-[25vw] md:text-[18vw] font-bold leading-[0.75] tracking-tighter select-none flex justify-center flex-wrap sm:flex-nowrap overflow-hidden">
+        {/* ═══════════════════════════════════════════
+            BIG LOGO SECTION
+        ═══════════════════════════════════════════ */}
+        <div className="mt-12 mb-10 w-full relative z-10 overflow-hidden">
+          <h2 className="text-[22vw] md:text-[14vw] lg:text-[10vw] font-bold leading-[0.75] tracking-tighter select-none flex flex-nowrap justify-center whitespace-nowrap overflow-hidden">
           {["K", "A", "R", "Y", "O", "®"].map((char, i) => (
             <motion.span
               key={i}
@@ -276,7 +275,8 @@ export function StudioFooter() {
               {char}
             </motion.span>
           ))}
-        </h2>
+          </h2>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════
