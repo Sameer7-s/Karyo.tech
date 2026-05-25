@@ -91,6 +91,10 @@ npm install
 npm run dev
 ```
 
+`npm run dev` starts the Vite frontend (port 3000) and the Express API (port 5000). Use `npm run dev:web` for frontend only.
+
+**Admin login:** http://localhost:3000/admin — credentials are set in `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+
 ---
 
 # SELECTED SYSTEMS

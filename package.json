@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:web": "vite --port=3000 --host=0.0.0.0",
+    "dev:all": "node scripts/dev-all.mjs",
     "start": "node backend/server.js",
     "server": "node backend/server.js",
     "dev:server": "node --watch backend/server.js",

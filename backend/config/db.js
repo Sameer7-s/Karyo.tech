@@ -185,31 +185,20 @@ function hasExistingSchema() {
 }
 
 function seedAdmin() {
-  const count = db.prepare("SELECT COUNT(*) AS total FROM admin_users").get().total;
   const createdAt = now();
   const password = process.env.ADMIN_PASSWORD || "Admin@123";
-  const email = process.env.ADMIN_EMAIL || "admin@example.com";
+  const email = String(process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
   const name = process.env.ADMIN_NAME || "Admin";
   const passwordHash = bcrypt.hashSync(password, 12);
+  const updatedAt = now();
+  const existingAdmin = db.prepare("SELECT id FROM admin_users WHERE email = ?").get(email);
 
-  if (count > 0) {
-    if (!envFlag("ADMIN_RESET_PASSWORD_ON_START")) return;
-
-    const updatedAt = now();
-    const existingAdmin = db.prepare("SELECT id FROM admin_users WHERE email = ?").get(email.toLowerCase());
-    if (existingAdmin) {
+  if (existingAdmin) {
+    if (envFlag("ADMIN_RESET_PASSWORD_ON_START")) {
       db.prepare("UPDATE admin_users SET name = ?, passwordHash = ?, updatedAt = ? WHERE id = ?")
         .run(name, passwordHash, updatedAt, existingAdmin.id);
-      console.log(`Admin password reset for ${email}`);
-      return;
+      console.log(`Admin credentials synced for ${email}`);
     }
-
-    db.prepare(`
-      INSERT INTO admin_users (id, name, email, passwordHash, role, createdAt, updatedAt)
-      VALUES (?, ?, ?, ?, 'admin', ?, ?)
-    `).run(uid(), name, email.toLowerCase(), passwordHash, updatedAt, updatedAt);
-
-    console.log(`Admin account created for ${email}`);
     return;
   }
 

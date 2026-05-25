@@ -1,6 +1,6 @@
 /** KARYO premium website — shared project data (Selected Systems card + case study page) */
 export const karyoProject = {
-  title: "(Premium website)",
+  title: "Premium Websites",
   displayName: "KARYO",
   category: "Web Development",
   year: "2025",

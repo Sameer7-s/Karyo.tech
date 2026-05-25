@@ -49,8 +49,14 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   try {
     response = await fetch(url, { ...options, headers });
   } catch (error) {
-    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-      throw new Error("Unable to connect to the server. Please check your internet connection and try again.");
+    if (error instanceof TypeError) {
+      const isDev = import.meta.env.DEV;
+      const usesProxy = API_URL.startsWith("/") || API_URL.includes("localhost:3000");
+      throw new Error(
+        isDev && usesProxy
+          ? "Cannot reach the API. Restart with npm run dev (starts frontend + backend), or run npm run server in another terminal."
+          : "Unable to connect to the server. Please try again.",
+      );
     }
     throw error;
   }
