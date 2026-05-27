@@ -6,9 +6,19 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const isWindows = process.platform === "win32";
 
 function run(name, command, args) {
-  const child = spawn(command, args, {
+  let executable = command;
+  let executableArgs = args;
+
+  if (command === "npm" && process.env.npm_execpath) {
+    executable = process.execPath;
+    executableArgs = [process.env.npm_execpath, ...args];
+  } else if (command === "npm" && isWindows) {
+    executable = process.env.ComSpec || "cmd.exe";
+    executableArgs = ["/d", "/s", "/c", "npm", ...args];
+  }
+
+  const child = spawn(executable, executableArgs, {
     stdio: "inherit",
-    shell: isWindows,
     env: process.env,
     cwd: root,
   });
@@ -26,7 +36,7 @@ function run(name, command, args) {
 console.log("Starting KARYO backend (port 5000) and frontend (port 3000)...\n");
 
 const backend = run("backend", "node", ["--watch", "backend/server.js"]);
-const frontend = run("frontend", "npm", ["run", "dev"]);
+const frontend = run("frontend", "npm", ["run", "dev:web"]);
 
 function shutdown() {
   backend.kill();

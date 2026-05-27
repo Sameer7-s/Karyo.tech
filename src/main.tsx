@@ -31,11 +31,13 @@ if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
 }
 
-// Initialize Lenis smooth scrolling
+// Initialize Lenis smooth scrolling (skip on admin pages)
 let lenis: Lenis | null = null;
 let rafId: number | null = null;
 
-function startLenis() {
+export function startLenis() {
+  if (lenis) return;
+  if (window.location.pathname.startsWith("/admin")) return;
   lenis = new Lenis({
     lerp: 0.1,
     smoothWheel: true,
@@ -50,7 +52,7 @@ function startLenis() {
   rafId = requestAnimationFrame(raf);
 }
 
-function stopLenis() {
+export function stopLenis() {
   if (rafId !== null) {
     cancelAnimationFrame(rafId);
     rafId = null;
@@ -84,9 +86,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/projects" element={<WorkPage />} />
               <Route path="/services" element={<App />} />
               <Route path="/contact" element={<ContactPage />} />
-              <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin">
-                <Route index element={<AdminLogin />} />
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AdminLayout />}>
                     <Route path="dashboard" element={<Dashboard />} />

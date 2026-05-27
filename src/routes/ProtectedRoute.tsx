@@ -7,6 +7,6 @@ export function ProtectedRoute() {
   const location = useLocation();
 
   if (loading) return <Loader label="Verifying admin session" />;
-  if (!admin) return <Navigate to="/admin" replace state={{ from: location }} />;
+  if (!admin) return <Navigate to="/admin/login" replace state={{ from: location }} />;
   return <Outlet />;
 }

@@ -228,7 +228,9 @@ export function SelectedSystemsSection() {
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:gap-x-12">
           {projects.map((project, i) => (
-            <ProjectCard key={project.title} project={project} index={i} />
+            <React.Fragment key={project.title}>
+              <ProjectCard project={project} index={i} />
+            </React.Fragment>
           ))}
         </div>
       </div>

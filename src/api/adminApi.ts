@@ -47,7 +47,13 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
   const url = `${API_URL}${path}`;
   let response;
   try {
-    response = await fetch(url, { ...options, headers });
+    response = await fetch(url, {
+      cache: "no-store",
+      mode: "cors",
+      credentials: "include",
+      ...options,
+      headers,
+    });
   } catch (error) {
     if (error instanceof TypeError) {
       const isDev = import.meta.env.DEV;

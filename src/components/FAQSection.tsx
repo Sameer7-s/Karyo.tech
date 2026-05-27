@@ -188,14 +188,15 @@ export function FAQSection() {
 
         <div className="flex flex-col gap-3 sm:gap-4">
           {faqs.map((faq, i) => (
-            <FAQItem
-              key={faq.question}
-              index={i}
-              question={faq.question}
-              answer={faq.answer}
-              isOpen={openIndex === i}
-              onToggle={() => setOpenIndex(openIndex === i ? null : i)}
-            />
+            <React.Fragment key={faq.question}>
+              <FAQItem
+                index={i}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openIndex === i}
+                onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+              />
+            </React.Fragment>
           ))}
         </div>
       </div>

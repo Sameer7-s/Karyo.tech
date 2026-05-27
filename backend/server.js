@@ -1,4 +1,7 @@
 import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
 import cors from "cors";
 import { initDatabase } from "./config/db.js";
@@ -36,13 +39,6 @@ app.use(cors({
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-app.get("/", (_req, res) => {
-  res.json({
-    success: true,
-    message: "KARYO backend running",
-  });
-});
-
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "API is running" });
 });
@@ -55,6 +51,19 @@ app.use("/api", serviceRequestRoutes);
 app.use("/api", projectInquiryRoutes);
 app.use("/api", newsletterRoutes);
 app.use("/api", feedbackRoutes);
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distPath = path.resolve(__dirname, "../dist");
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
+      return res.sendFile(path.join(distPath, "index.html"));
+    }
+    next();
+  });
+  console.log(`Serving static frontend from ${distPath}`);
+}
 
 app.use(notFoundRoute);
 app.use(errorHandler);

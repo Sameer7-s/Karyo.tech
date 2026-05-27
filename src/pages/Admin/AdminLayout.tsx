@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Sidebar } from "../../components/admin/Sidebar";
 import { Topbar } from "../../components/admin/Topbar";
 import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../components/common/Toast";
+import { stopLenis, startLenis } from "../../main";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
@@ -23,6 +24,11 @@ export default function AdminLayout() {
   const { logout } = useAuth();
   const { showToast } = useToast();
   const title = useMemo(() => titles[location.pathname] || "Admin", [location.pathname]);
+
+  useEffect(() => {
+    stopLenis();
+    return () => startLenis();
+  }, []);
 
   async function handleLogout() {
     await logout();

@@ -59,9 +59,9 @@ export function RecordsPage({ config }: { config: RecordsConfig }) {
         dateTo,
         ...filterParams,
       });
-      setRows(response.rows);
-      setTotal(response.total);
-      setPages(response.pages);
+      setRows(response.rows ?? []);
+      setTotal(response.total ?? 0);
+      setPages(response.pages ?? 1);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setError(message);

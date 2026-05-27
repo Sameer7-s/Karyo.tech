@@ -39,9 +39,9 @@ function serializeLead(lead) {
 
 export async function createContact(req, res, next) {
   try {
-    required(req.body, ["name", "email", "phone", "countryCode", "projectType", "message"]);
+    required(req.body, ["name", "email", "projectType", "message"]);
     assertEmail(req.body.email);
-    assertPhone(req.body.phone);
+    if (req.body.phone) assertPhone(req.body.phone);
 
     const id = uid();
     const createdAt = now();
